@@ -4,8 +4,11 @@ import './Search.css';
 
 class Search extends Component {
 
-    state = {
-        journals: []
+    constructor() {
+        super();
+        this.state = {
+            journals: []
+        };
     }
 
     render() {
@@ -18,44 +21,43 @@ class Search extends Component {
         );
     }
 
+   
     searchDataHandler = () => {
+        var self = this;
         //var baseUrl = "https://igu-online.org/wp-admin/admin-ajax.php";
         var baseUrl = "http://160.153.133.192/~j3uhf7xswh45/wp-admin/admin-ajax.php";
-        //var action = "the_ajax_hook";
-        //var name = "china";
-        //var filter = "country";
+        var action = "the_ajax_hook";
+        var name = "china";
+        var filter = "country";
        // var requestUrl = baseUrl + "?action=" + action + "&name=" + name + "&filter=" + filter; 
-
-        /*
-        const headers = {
-            headers : {
-                'Content-Type': 'application/json;charset=UTF-8',
-                "Access-Control-Allow-Origin": "*",
-            }
-        };*/
 
         const instance = axios.create({
             baseURL: baseUrl,
-            timeout: 1000,
+            timeout: 3000,
             headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'}
           });
 
         const querystring = require('querystring');
 
         const searchParams = {
-            action: 'the_ajax_hook',
-            name: 'china',
-            filter: 'country'
+            action: action,
+            name: name,
+            filter: filter
         };
 
-        instance.post(baseUrl ,querystring.stringify(searchParams))
+        instance.post(baseUrl, querystring.stringify(searchParams))
         .then(function (response){
             console.log(response);
-            this.setState({journals: response});
+            self.updateState(response);
         })
         .catch(function(error) {
             console.log(error);
         });
+
+    }
+
+    updateState = (response) => {
+        this.setState({journals: response});
     }
 }
 

@@ -3,7 +3,7 @@ import './JournalItem.css';
 
 const journal = (props) => (
     <article className="Journal">
-        <p>This is a journal item.</p>
+        <p>Journal Name: {props.journal.name}</p>
     </article>
 );
 

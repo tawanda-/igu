@@ -1,0 +1,1 @@
+export const FETCH_JOURNALS = 'FETCH_JOURNALS';

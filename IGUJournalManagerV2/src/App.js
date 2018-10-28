@@ -5,7 +5,7 @@ import './App.css';
 import Search from './Search/Search';
 import Results from './Results/Results';
 import axiosInstance from './api/axios';
-import { DEV_BASE_URL, WP_ACTION } from './api/configSettings';
+import { DEV_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionTypes from './store/actions'
 
 class App extends Component {
@@ -35,7 +35,6 @@ class App extends Component {
         console.log(error);
     });
   }
-
 
   render() {
     return (

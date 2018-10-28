@@ -8,6 +8,10 @@ class Search extends Component {
     
     //todo: textinput sanity checks
 
+    state = {
+        searchTerm: ''
+    }
+
     constructor(props) {
         super(props);
         this.searchTerm = '';
@@ -15,15 +19,23 @@ class Search extends Component {
     }
 
     handleChange(event) {
-        this.searchTerm = event.target.value;
+        this.setState({searchTerm: event.target.value});
     }
 
     render() {
         return (
             <div>
                 <p>Search Component</p>
-                <input className="Searchbox" type="text" onChange={this.handleChange}/>
-                <button onClick={() => this.props.onSearchJournalsByName(this.searchTerm)} className="Searchbutton">Click to Search</button>
+                <input className="Searchbox"
+                    type="text"
+                    placeholder='Enter Search Term'
+                    value={this.state.searchTerm}
+                    onChange={this.handleChange} />
+
+                <button className="Searchbutton"
+                        onClick={() => this.props.onSearchJournalsByName(this.state.searchTerm)}>
+                        Click to Search
+                </button>
             </div>
         );
     }

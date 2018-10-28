@@ -5,20 +5,25 @@ import './Search.css';
 import * as actionTypes from '../store/actions';
 
 class Search extends Component {
+    
+    //todo: textinput sanity checks
 
-    constructor() {
-        super();
-        this.state = {
-            journals: [{name: 'journal'}],
-        };
+    constructor(props) {
+        super(props);
+        this.searchTerm = '';
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(event) {
+        this.searchTerm = event.target.value;
     }
 
     render() {
         return (
             <div>
                 <p>Search Component</p>
-                <input type="string" className="Searchbox"/>
-                <button onClick={this.props.onSearchJournalsByName} className="Searchbutton">Click to Search</button>
+                <input className="Searchbox" type="text" onChange={this.handleChange}/>
+                <button onClick={() => this.props.onSearchJournalsByName(this.searchTerm)} className="Searchbutton">Click to Search</button>
             </div>
         );
     }
@@ -26,7 +31,7 @@ class Search extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-      onSearchJournalsByName: () => dispatch({type: actionTypes.SEARCH_JOURNALS_BY_NAME, payload:'journalName'}),
+      onSearchJournalsByName: (searchTerm) => dispatch({type: actionTypes.SEARCH_JOURNALS_BY_NAME, payload: searchTerm}),
     };
   };
 

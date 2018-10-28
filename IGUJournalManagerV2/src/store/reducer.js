@@ -1,30 +1,38 @@
 import * as actionTypes from './actions';
 
+
 const initialState = {
-    journals:[{name:'name', id:'123'}, {name:'second', id:'456'}]
+    journals:[{name:'name', id:'123'}, {name:'second name', id:'456'}],
+    tempJournals:[]
 };
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
-        case actionTypes.FETCH_ALL_JOURNALS:
+        case actionTypes.FILTER_JOURNALS_BY_NAME:
+            const tempArray = state.journals.filter(result => 
+                result.name.toLocaleLowerCase().startsWith(action.payload.toLocaleLowerCase())
+            );
             return {
                 ...state,
-                journals: [] //todo: set new state
-            };
-
-        case actionTypes.FILTER_JOURNALS_BY_NAME:
-            return {
-                journals:[{name:'blue', id:'000'}, {name:'farm', id:'33'}]
-            };
+                tempJournals: tempArray
+            };   
 
         case actionTypes.FILTER_JOURNALS_BY_TOPIC:
+            const tempTopicArray = state.journals.filter(result =>
+                 result.topic.toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
+            );
             return {
-                journals:[{name:'topic', id:'45'}, {name:'change', id:'7'}]
-            };
+                ...state,
+                tempJournals: tempTopicArray
+            };   
 
         case actionTypes.SEARCH_JOURNALS_BY_NAME:
+            const updatedArray = state.journals.filter(result =>
+                 result.name.toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
+            );
             return {
-                journals:[{name: action.payload, id:'1'}, {name:'na', id:'87'}]
+                ...state,
+                tempJournals: updatedArray
             };    
 
         default:

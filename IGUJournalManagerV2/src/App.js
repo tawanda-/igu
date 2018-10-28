@@ -50,7 +50,7 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    data: state.journals
+    data: state.tempJournals
   };
 };
 

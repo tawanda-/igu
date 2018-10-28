@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 
 import './Search.css';
-import * as actionTypes from '../store/actions';
+import * as actionCreators from '../../store/actions'
 
 class Search extends Component {
     
@@ -43,7 +43,7 @@ class Search extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-      onSearchJournalsByName: (searchTerm) => dispatch({type: actionTypes.SEARCH_JOURNALS_BY_NAME, payload: searchTerm}),
+      onSearchJournalsByName: (searchTerm) => dispatch(actionCreators.searchJournalsByName(searchTerm)),
     };
   };
 

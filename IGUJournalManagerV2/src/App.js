@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
 import './App.css';
-import Search from './Search/Search';
-import Results from './Results/Results';
+import Search from './components/Search/Search';
+import Results from './components/Results/Results';
 import axiosInstance from './api/axios';
 import { DEV_BASE_URL, WP_ACTION } from './api/settings';
-import * as actionTypes from './store/actions'
+import * as actionCreators from './store/actions'
 
 class App extends Component {
 
@@ -25,11 +25,12 @@ class App extends Component {
     };
 
     //todo: configure setting baseUrl
+    var self = this;
     axiosInstance.post(DEV_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
         console.log(response.data);
         console.log(response.data.length); //todo: remove
-
+        self.props.onStoreResult(response.data);
     })
     .catch(function(error) {
         console.log(error);
@@ -55,8 +56,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onFilterJournalsByName: () => dispatch({type: actionTypes.FILTER_JOURNALS_BY_NAME, payload:'B'}),
-    onFilterJournalsByTopic: () => dispatch({type: actionTypes.FILTER_JOURNALS_BY_TOPIC, payload:'topic'}),
+    onFilterJournalsByName: () => dispatch(actionCreators.filterJournalsByName('B')),
+    onFilterJournalsByTopic: () => dispatch(actionCreators.filterJournalsByTopic('topic')),
+    onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),
   };
 };
 

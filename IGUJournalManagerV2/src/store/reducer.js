@@ -8,6 +8,13 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
+        case actionTypes.STORE_RESULT:
+            return {
+                ...state,
+                journals: action.payload,
+                tempJournals: action.payload
+            };   
+
         case actionTypes.FILTER_JOURNALS_BY_NAME:
             const tempArray = state.journals.filter(result => 
                 result.name.toLocaleLowerCase().startsWith(action.payload.toLocaleLowerCase())
@@ -28,7 +35,7 @@ const reducer = (state = initialState, action) => {
 
         case actionTypes.SEARCH_JOURNALS_BY_NAME:
             const updatedArray = state.journals.filter(result =>
-                 result.name.toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
+                 result.country.toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
             );
             return {
                 ...state,

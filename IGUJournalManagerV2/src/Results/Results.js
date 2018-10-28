@@ -7,14 +7,10 @@ import JournalItem from '../ListingsItem/JournalItem';
 
 class Results extends Component {
 
-    // state = {
-    //     journals:[]
-    // }
-
     render() {
 
         const journals = this.props.results.map(journal => {
-            return <JournalItem journal={journal}/>;
+            return <JournalItem key={journal.id} journal={journal}/>;
         });
 
         return (

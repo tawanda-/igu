@@ -30,7 +30,7 @@ const reducer = (state = initialState, action) => {
 
         case actionTypes.FILTER_JOURNALS_BY_NAME:
             const tempArray = state.journals.filter(result => 
-                result.name_of_journal.toLocaleLowerCase().startsWith(action.payload.toLocaleLowerCase())
+                result.name_of_journal.trim().toLocaleLowerCase().startsWith(action.payload.toLocaleLowerCase())
             );
             return {
                 ...state,

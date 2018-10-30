@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import { Pagination } from 'react-bootstrap';
 
 import './App.css';
 import Search from './components/Search/Search';
@@ -36,9 +37,26 @@ class App extends Component {
   }
 
   render() {
+
+    //setup pagination: maybe move code
+    //todo: prepopulate chars for pagination widget
+    var array = [];
+    array = this.props.paginationList;
+
     return (
       <div className="App">
-        <button onClick={this.props.onFilterJournalsByName}> Filter </button>
+        <Pagination bsSize="medium">{
+             array.map((character, index) => {
+              return (
+                  <Pagination.Item
+                    onClick={() => this.props.onFilterJournalsByName(character)}
+                    key={index}>
+                    {character}
+                  </Pagination.Item>
+              );
+            })
+          }
+        </Pagination>
         <Search />
         <Results results={this.props.data} />
       </div>
@@ -55,7 +73,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onFilterJournalsByName: () => dispatch(actionCreators.filterJournalsByName('B')),
+    onFilterJournalsByName: (character) => dispatch(actionCreators.filterJournalsByName(character)),
     onFilterJournalsByTopic: () => dispatch(actionCreators.filterJournalsByTopic('topic')),
     onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),
   };

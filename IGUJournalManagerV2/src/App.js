@@ -28,8 +28,6 @@ class App extends Component {
     var self = this;
     axiosInstance.post(DEV_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
-        console.log(response.data);
-        console.log(response.data.length); //todo: remove
         self.props.onStoreResult(response.data);
     })
     .catch(function(error) {
@@ -50,7 +48,8 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    data: state.tempJournals
+    data: state.tempJournals,
+    paginationList: state.paginationChars 
   };
 };
 

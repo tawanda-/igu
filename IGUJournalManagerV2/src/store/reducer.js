@@ -2,17 +2,30 @@ import * as actionTypes from './actions';
 
 
 const initialState = {
-    journals:[{name:'name', id:'123'}, {name:'second name', id:'456'}],
-    tempJournals:[]
+    journals:[],
+    tempJournals:[],
+    paginationChars : []
 };
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
         case actionTypes.STORE_RESULT:
+
+            //todo: maybe move this code
+            var tempChars = [];
+            var journals = action.payload;
+            for(var i=0; i< journals.length; i++) {
+                var firstChar = journals[i].name_of_journal.trim().charAt(0);
+                if(!tempChars.includes(firstChar)) {
+                    tempChars.push(firstChar);
+                }
+            }
+            console.log("Pagination Filters: " + tempChars.sort());
             return {
                 ...state,
                 journals: action.payload,
-                tempJournals: action.payload
+                tempJournals: action.payload,
+                paginationChars: tempChars
             };   
 
         case actionTypes.FILTER_JOURNALS_BY_NAME:

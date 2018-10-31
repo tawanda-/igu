@@ -11,6 +11,11 @@ import * as actionCreators from './store/actions'
 
 class App extends Component {
 
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   componentDidMount() {
     this.initialDataLoad();
   }
@@ -29,6 +34,7 @@ class App extends Component {
     var self = this;
     axiosInstance.post(DEV_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
+        console.log(response.data);
         self.props.onStoreResult(response.data);
     })
     .catch(function(error) {
@@ -36,12 +42,16 @@ class App extends Component {
     });
   }
 
+  handleChange(event) {
+    this.props.onFilterJournalsByTopic(event.target.value.toLowerCase());
+  }
+
   render() {
 
     //setup pagination: maybe move code
-    //todo: prepopulate chars for pagination widget
-    var array = [];
+    var topics = [], array = [];
     array = this.props.paginationList;
+    topics = this.props.filterList;
 
     return (
       <div className="App">
@@ -58,6 +68,21 @@ class App extends Component {
           }
         </Pagination>
         <Search />
+
+        <select className="select-topic"
+          onChange={this.handleChange}>
+          <option>All Countries</option>
+            {
+              topics.map((topicName, index) => {
+                return (
+                  <option key={topicName}>
+                    {topicName}
+                  </option>
+                );
+              })
+            }
+        </select>
+
         <Results results={this.props.data} />
       </div>
     );
@@ -67,14 +92,16 @@ class App extends Component {
 const mapStateToProps = state => {
   return {
     data: state.tempJournals,
-    paginationList: state.paginationChars 
+    paginationList: state.paginationChars,
+    filterList: state.filterTerms
+
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     onFilterJournalsByName: (character) => dispatch(actionCreators.filterJournalsByName(character)),
-    onFilterJournalsByTopic: () => dispatch(actionCreators.filterJournalsByTopic('topic')),
+    onFilterJournalsByTopic: (topic) => dispatch(actionCreators.filterJournalsByTopic(topic)),
     onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),
   };
 };

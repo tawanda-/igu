@@ -1,18 +1,21 @@
 import * as actionTypes from './actions';
 
+const ALL_COUNTRIES = "all countries";
 
 const initialState = {
     journals:[],
+    filterResults: [],
     tempJournals:[],
     paginationChars : [],
-    filterTerms: []
+    filterTerms: [],
+    isTopicFilterEnabled: false,
+    topicFilter: ""
 };
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
         case actionTypes.STORE_RESULT:
 
-            //todo: maybe move this code
             var tempFilterTerms = [], tempChars = [];
             var journals = action.payload;
 
@@ -37,33 +40,53 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 journals: action.payload,
+                filterResults: action.payload,
                 tempJournals: action.payload,
                 paginationChars: tempChars,
                 filterTerms: tempFilterTerms
-            };   
+            };
 
         case actionTypes.FILTER_JOURNALS_BY_NAME:
-            const tempArray = state.journals.filter(result => 
+            const tempArray = state.filterResults.filter(result => 
                 result.name_of_journal.trim().toLocaleLowerCase().startsWith(action.payload.toLocaleLowerCase())
             );
             return {
                 ...state,
-                tempJournals: tempArray
-            };   
+                tempJournals: tempArray,
+                topicFilter: action.payload
+            };
 
-        case actionTypes.FILTER_JOURNALS_BY_TOPIC:
-            //todo: complete
-            const tempTopicArray = state.journals.filter(result =>
-                 result.country.trim().toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
-            );
+        case actionTypes.FILTER_JOURNALS_BY_COUNTRY:
+            var tempTopicArray = [];
+            if(action.payload.toLocaleLowerCase() === ALL_COUNTRIES) {
+                tempTopicArray = state.journals;
+            } else {
+                tempTopicArray = state.journals.filter(result =>
+                    result.country.trim().toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
+                );
+            }
+
+            var  tempTopicChars = [];
+            for(var j=0; j< tempTopicArray.length; j++) {
+                var chr = tempTopicArray[j].name_of_journal.trim().charAt(0);
+                if(!tempTopicChars.includes(chr) && chr.length > 0) {
+                    tempTopicChars.push(chr);
+                }
+            }
+            tempTopicChars.sort();
+
             return {
                 ...state,
-                tempJournals: tempTopicArray
+                filterResults: tempTopicArray,
+                tempJournals: tempTopicArray,
+                paginationChars: tempTopicChars,
+                topicFilter: ""
             };   
 
         case actionTypes.SEARCH_JOURNALS_BY_NAME:
-            const updatedArray = state.journals.filter(result =>
-                 result.country.toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
+            const updatedArray = state.filterResults.filter(result =>
+                result.name_of_journal.trim().toLocaleLowerCase().startsWith(state.topicFilter.toLocaleLowerCase()) &&  
+                result.name_of_journal.trim().toLocaleLowerCase().includes(action.payload.toLocaleLowerCase())
             );
             return {
                 ...state,

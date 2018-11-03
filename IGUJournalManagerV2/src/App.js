@@ -43,7 +43,7 @@ class App extends Component {
   }
 
   handleChange(event) {
-    this.props.onFilterJournalsByTopic(event.target.value.toLowerCase());
+    this.props.onFilterJournalsByCountry(event.target.value.toLowerCase());
   }
 
   render() {
@@ -93,15 +93,15 @@ const mapStateToProps = state => {
   return {
     data: state.tempJournals,
     paginationList: state.paginationChars,
-    filterList: state.filterTerms
-
+    filterList: state.filterTerms,
+    selectedPaginationChar : state.topicFilter
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     onFilterJournalsByName: (character) => dispatch(actionCreators.filterJournalsByName(character)),
-    onFilterJournalsByTopic: (topic) => dispatch(actionCreators.filterJournalsByTopic(topic)),
+    onFilterJournalsByCountry: (country) => dispatch(actionCreators.filterJournalsByCountry(country)),
     onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),
   };
 };

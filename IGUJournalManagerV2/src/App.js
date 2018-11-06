@@ -11,9 +11,14 @@ import * as actionCreators from './store/actions'
 
 class App extends Component {
 
+  state = {
+    selectedChar: ''
+  }
+
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.handleFilterJournalsByNameClicked = this.handleFilterJournalsByNameClicked.bind(this);
   }
 
   componentDidMount() {
@@ -43,7 +48,13 @@ class App extends Component {
   }
 
   handleChange(event) {
+    this.setState({selectedChar: ''});
     this.props.onFilterJournalsByCountry(event.target.value.toLowerCase());
+  }
+
+  handleFilterJournalsByNameClicked (character) {
+    this.setState({selectedChar: character});
+    this.props.onFilterJournalsByName(character);
   }
 
   render() {
@@ -59,8 +70,9 @@ class App extends Component {
              array.map((character, index) => {
               return (
                   <Pagination.Item
-                    onClick={() => this.props.onFilterJournalsByName(character)}
-                    key={index}>
+                    onClick={() => this.handleFilterJournalsByNameClicked(character)}
+                    key={index}
+                    active={this.state.selectedChar === character}>
                     {character}
                   </Pagination.Item>
               );

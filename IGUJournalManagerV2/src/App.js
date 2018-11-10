@@ -12,13 +12,15 @@ import * as actionCreators from './store/actions'
 class App extends Component {
 
   state = {
-    selectedChar: ''
+    selectedLang: 'All Languages',
+    selectedCountry: '',
+    languages: []
   }
 
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleFilterJournalsByNameClicked = this.handleFilterJournalsByNameClicked.bind(this);
+    this.handleCountryChange = this.handleCountryChange.bind(this);
+    this.handleLanguageChange = this.handleLanguageChange.bind(this);
   }
 
   componentDidMount() {
@@ -39,7 +41,6 @@ class App extends Component {
     var self = this;
     axiosInstance.post(DEV_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
-        console.log(response.data);
         self.props.onStoreResult(response.data);
     })
     .catch(function(error) {
@@ -47,22 +48,22 @@ class App extends Component {
     });
   }
 
-  handleChange(event) {
-    this.setState({selectedChar: ''});
-    this.props.onFilterJournalsByCountry(event.target.value.toLowerCase());
+  handleCountryChange(event) {
+    this.setState({selectedCountry: event.target.value, selectedLang: ''});
+    this.props.onFilterJournalsByCountry(event.target.value);
   }
 
-  handleFilterJournalsByNameClicked (character) {
-    this.setState({selectedChar: character});
-    this.props.onFilterJournalsByName(character);
+  handleLanguageChange(event) {
+    this.setState({selectedLang: event.target.value});
+    this.props.onFilterJournalsByLanguage(this.state.selectedCountry , event.target.value);
   }
 
   render() {
 
-    //setup pagination: maybe move code
-    var topics = [], array = [];
+    var topics = [], array = [], languages = [];
     array = this.props.paginationList;
     topics = this.props.filterList;
+    languages = this.props.languageList;
 
     return (
       <div className="App">
@@ -70,9 +71,9 @@ class App extends Component {
              array.map((character, index) => {
               return (
                   <Pagination.Item
-                    onClick={() => this.handleFilterJournalsByNameClicked(character)}
+                    onClick={() => this.props.onFilterJournalsByName(character)}
                     key={index}
-                    active={this.state.selectedChar === character}>
+                    active={this.props.selectedPaginationChar === character}>
                     {character}
                   </Pagination.Item>
               );
@@ -81,8 +82,8 @@ class App extends Component {
         </Pagination>
         <Search />
 
-        <select className="select-topic"
-          onChange={this.handleChange}>
+        <select className="select-country"
+          onChange={this.handleCountryChange}>
           <option>All Countries</option>
             {
               topics.map((topicName, index) => {
@@ -95,6 +96,20 @@ class App extends Component {
             }
         </select>
 
+        <select className="select-language"
+          value={this.state.selectedLang}
+          onChange={this.handleLanguageChange}>
+          <option>All Languages</option>
+            {
+              languages.map((language, index) => {
+                return (
+                  <option key={index}>
+                    {language}
+                  </option>
+                );
+              })
+            }
+        </select>
         <Results results={this.props.data} />
       </div>
     );
@@ -106,12 +121,14 @@ const mapStateToProps = state => {
     data: state.tempJournals,
     paginationList: state.paginationChars,
     filterList: state.filterTerms,
+    languageList: state.languageTerms,
     selectedPaginationChar : state.topicFilter
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    onFilterJournalsByLanguage: (country, language) => dispatch(actionCreators.filterJournalsByLanguage(country, language)),
     onFilterJournalsByName: (character) => dispatch(actionCreators.filterJournalsByName(character)),
     onFilterJournalsByCountry: (country) => dispatch(actionCreators.filterJournalsByCountry(country)),
     onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),

@@ -2,6 +2,10 @@
   text-align: center;
 }
 
-.select-topic {
+.select-country {
   margin: 10px 0px 10px 0px;
+}
+
+.select-language {
+  margin: 10px 0px 10px 10px;
 }

@@ -1,8 +1,9 @@
 .Searchbox {
-    border-color: palegreen;
+    border-color: rgb(214, 219, 214);
     margin-right: 5px;
+    width: 30%
 }
 
 .Searchbutton {
-    background: red;
+    background: rgb(238, 231, 231);
 }

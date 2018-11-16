@@ -28,7 +28,7 @@ class Search extends Component {
                 <p>Search Component</p>
                 <input className="Searchbox"
                     type="text"
-                    placeholder='Search By Country'
+                    placeholder='Search By Journal Name'
                     value={this.state.searchTerm}
                     onChange={this.handleChange} />
 

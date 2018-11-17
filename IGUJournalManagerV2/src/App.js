@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Pagination } from 'react-bootstrap';
+import Loader from 'react-loader-spinner';
 
 import './App.css';
 import Search from './components/Search/Search';
 import Results from './components/Results/Results';
 import axiosInstance from './api/axios';
 import { DEV_BASE_URL, WP_ACTION } from './api/settings';
-import * as actionCreators from './store/actions'
+import * as actionCreators from './store/actions';
 
 class App extends Component {
 
@@ -21,6 +22,7 @@ class App extends Component {
     super(props);
     this.handleCountryChange = this.handleCountryChange.bind(this);
     this.handleLanguageChange = this.handleLanguageChange.bind(this);
+    this.handleJournalNameFilterClicked = this.handleJournalNameFilterClicked.bind(this);
   }
 
   componentDidMount() {
@@ -41,21 +43,30 @@ class App extends Component {
     var self = this;
     axiosInstance.post(DEV_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
+        self.props.onResultsLoading(true);
         self.props.onStoreResult(response.data);
     })
     .catch(function(error) {
+        self.props.onResultsLoading(false);
         console.log(error);
     });
   }
 
   handleCountryChange(event) {
     this.setState({selectedCountry: event.target.value, selectedLang: ''});
+    this.props.onResultsLoading(true);
     this.props.onFilterJournalsByCountry(event.target.value);
   }
 
   handleLanguageChange(event) {
     this.setState({selectedLang: event.target.value});
+    this.props.onResultsLoading(true);
     this.props.onFilterJournalsByLanguage(this.state.selectedCountry , event.target.value);
+  }
+
+  handleJournalNameFilterClicked(event) {
+    this.props.onResultsLoading(true);
+    this.props.onFilterJournalsByName(event.target.value);
   }
 
   render() {
@@ -102,11 +113,14 @@ class App extends Component {
               }
           </select>
 
-          <Pagination className="filterPagination" bsSize="medium">{
+          <Loader type="Oval" color="#4285f4" height={60} width={60} />
+
+          <Pagination className="filterPagination" bsSize="medium">
+            {
               array.map((character, index) => {
                 return (
                     <Pagination.Item
-                      onClick={() => this.props.onFilterJournalsByName(character)}
+                      onClick={() => this.handleJournalNameFilterClicked}
                       key={index}
                       active={this.props.selectedPaginationChar === character}>
                       {character}
@@ -130,7 +144,8 @@ const mapStateToProps = state => {
     paginationList: state.paginationChars,
     filterList: state.filterTerms,
     languageList: state.languageTerms,
-    selectedPaginationChar : state.topicFilter
+    selectedPaginationChar : state.topicFilter,
+    isResultsLoading: state.resultsLoading
   };
 };
 
@@ -140,6 +155,7 @@ const mapDispatchToProps = dispatch => {
     onFilterJournalsByName: (character) => dispatch(actionCreators.filterJournalsByName(character)),
     onFilterJournalsByCountry: (country) => dispatch(actionCreators.filterJournalsByCountry(country)),
     onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),
+    onResultsLoading: (isLoading) => dispatch(actionCreators.resultsLoading(isLoading))
   };
 };
 

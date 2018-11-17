@@ -4,6 +4,7 @@ const ALL_COUNTRIES = "all countries";
 const ALL_LANGUAGES = "all languages";
 
 const initialState = {
+    resultsLoading: false,
     journals:[],
     filterResults: [],
     tempJournals:[],
@@ -53,7 +54,8 @@ const reducer = (state = initialState, action) => {
                 tempJournals: action.payload,
                 paginationChars: tempChars,
                 filterTerms: tempFilterTerms,
-                languageTerms: tempLanguageTerms
+                languageTerms: tempLanguageTerms,
+                resultsLoading: false
             };
 
         case actionTypes.FILTER_JOURNALS_BY_NAME:
@@ -77,7 +79,8 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 tempJournals: tempArray,
                 topicFilter: action.payload,
-                languageTerms: tempLang
+                languageTerms: tempLang,
+                resultsLoading: false
             };
 
         case actionTypes.FILTER_JOURNALS_BY_COUNTRY:
@@ -114,7 +117,8 @@ const reducer = (state = initialState, action) => {
                 tempJournals: tempCountriesArray,
                 paginationChars: tempTopicChars,
                 languageTerms: tempLangArray,
-                topicFilter: ""
+                topicFilter: "",
+                resultsLoading: false
             };   
 
         case actionTypes.FILTER_JOURNALS_BY_LANGUAGE:
@@ -154,7 +158,8 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 tempJournals: langArray,
                 paginationChars: tempLangChars,
-                topicFilter: ""
+                topicFilter: "",
+                resultsLoading: false
             }; 
 
             
@@ -165,7 +170,14 @@ const reducer = (state = initialState, action) => {
         );
         return {
             ...state,
-            tempJournals: updatedArray
+            tempJournals: updatedArray,
+            resultsLoading: false
+        };
+
+        case actionTypes.LOADING_STATUS:
+        return {
+            ...state,
+            resultsLoading: true
         };
 
         default:

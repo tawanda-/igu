@@ -67,49 +67,57 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Pagination bsSize="medium">{
-             array.map((character, index) => {
-              return (
-                  <Pagination.Item
-                    onClick={() => this.props.onFilterJournalsByName(character)}
-                    key={index}
-                    active={this.props.selectedPaginationChar === character}>
-                    {character}
-                  </Pagination.Item>
-              );
-            })
-          }
-        </Pagination>
+
+      <div className="search-container">
         <Search />
+      </div>
 
-        <select className="select-country"
-          onChange={this.handleCountryChange}>
-          <option>All Countries</option>
-            {
-              topics.map((topicName, index) => {
+        <div className="filters-container">
+          <select className="select-country"
+            onChange={this.handleCountryChange}>
+            <option>All Countries</option>
+              {
+                topics.map((topicName, index) => {
+                  return (
+                    <option key={topicName}>
+                      {topicName}
+                    </option>
+                  );
+                })
+              }
+          </select>
+
+          <select className="select-language"
+            value={this.state.selectedLang}
+            onChange={this.handleLanguageChange}>
+            <option>All Languages</option>
+              {
+                languages.map((language, index) => {
+                  return (
+                    <option key={index}>
+                      {language}
+                    </option>
+                  );
+                })
+              }
+          </select>
+
+          <Pagination className="filterPagination" bsSize="medium">{
+              array.map((character, index) => {
                 return (
-                  <option key={topicName}>
-                    {topicName}
-                  </option>
+                    <Pagination.Item
+                      onClick={() => this.props.onFilterJournalsByName(character)}
+                      key={index}
+                      active={this.props.selectedPaginationChar === character}>
+                      {character}
+                    </Pagination.Item>
                 );
               })
             }
-        </select>
+          </Pagination>
 
-        <select className="select-language"
-          value={this.state.selectedLang}
-          onChange={this.handleLanguageChange}>
-          <option>All Languages</option>
-            {
-              languages.map((language, index) => {
-                return (
-                  <option key={index}>
-                    {language}
-                  </option>
-                );
-              })
-            }
-        </select>
+        </div>
+
         <Results results={this.props.data} />
       </div>
     );

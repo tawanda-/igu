@@ -25,7 +25,6 @@ class Search extends Component {
     render() {
         return (
             <div>
-                <p>Search Component</p>
                 <input className="Searchbox"
                     type="text"
                     placeholder='Search By Journal Name'

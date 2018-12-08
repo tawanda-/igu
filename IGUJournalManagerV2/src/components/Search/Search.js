@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-
-import './Search.css';
 import * as actionCreators from '../../store/actions'
 
 class Search extends Component {
@@ -24,17 +22,27 @@ class Search extends Component {
 
     render() {
         return (
-            <div>
-                <input className="Searchbox"
-                    type="text"
-                    placeholder='Search By Journal Name'
-                    value={this.state.searchTerm}
-                    onChange={this.handleChange} />
-
-                <button className="Searchbutton"
-                        onClick={() => this.props.onSearchJournalsByName(this.state.searchTerm)}>
-                        Click to Search
-                </button>
+            <div class="container">
+                <div class="row">
+                    <div class="input-group search col-md-8">
+                        <input type="text" class="form-control" ></input>
+                        <input 
+                            className="form-control"
+                            type="text"
+                            placeholder="SEARCH BY JOURNAL NAME"
+                            value={this.state.searchTerm}
+                            onChange={this.handleChange} 
+                        />
+                        <div class="input-group col-md-3">
+                            <button 
+                                type="button" 
+                                class="btn"
+                                onClick={() => this.props.onSearchJournalsByName(this.state.searchTerm)}>
+                                    CLICK SEARCH
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

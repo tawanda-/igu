@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
-
-import './Results.css'
 import JournalItem from '../ListingsItem/JournalItem';
-
 
 class Results extends Component {
 
@@ -13,11 +10,15 @@ class Results extends Component {
         });
 
         return (
-            <div>
-                <p>Results Section:</p>
-                <section className="Results">
-                    {journals}
-                </section>
+            <div className="container">
+                <div className="row">
+                    <div className="results">
+                        Results section
+                    </div>
+                </div>
+
+                {journals}
+
             </div>
         );
     }

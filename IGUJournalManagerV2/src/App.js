@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Pagination } from 'react-bootstrap';
-import Loader from 'react-loader-spinner';
 import Search from './components/Search/Search';
-import Results from './components/Results/Results';
+import Pagination from './components/Pagination';
 import axiosInstance from './api/axios';
 import { DEV_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
+import Results from './components/Results/Results';
+import { Spin, Icon } from 'antd';
+
+const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 
 class App extends Component {
 
@@ -20,7 +22,7 @@ class App extends Component {
     super(props);
     this.handleCountryChange = this.handleCountryChange.bind(this);
     this.handleLanguageChange = this.handleLanguageChange.bind(this);
-    this.handleJournalNameFilterClicked = this.handleJournalNameFilterClicked.bind(this);
+    this.pagination = this.pagination.bind(this);
   }
 
   componentDidMount() {
@@ -62,210 +64,120 @@ class App extends Component {
     this.props.onFilterJournalsByLanguage(this.state.selectedCountry , event.target.value);
   }
 
-  handleJournalNameFilterClicked(event) {
-    this.props.onResultsLoading(true);
-    this.props.onFilterJournalsByName(event.target.value);
+  pagination = () => {
+    const listItems = this.props.paginationList.map((character, index) =>
+        <li 
+            className="page-item" 
+            key={index}
+            onClick={(event) => {
+                this.props.onResultsLoading(true);
+                this.props.onFilterJournalsByName(event.target.value);
+            }}
+            active={this.props.selectedPaginationChar === character}
+        >
+            <a className="page-link" href="#">{character}</a>
+        </li>
+    );
+    return (
+      <ul className="pagination table-responsive mb-2">{listItems}</ul>
+    );
   }
 
+  //<Loader type="Oval" color="#4285f4" height={60} width={60} />
   render() {
 
-    var topics = [], array = [], languages = [];
-    array = this.props.paginationList;
+    var topics = [], languages = [];
     topics = this.props.filterList;
     languages = this.props.languageList;
 
     return (
 
       <section id="about">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 welcome">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-8 welcome">
             <h2><b>WELCOME TO</b> IGU UGI JOURNAL DATABASE</h2>
         </div>
 
-          <div class="col-lg-8 info_line lead">  
+          <div className="col-lg-8 info_line lead">  
            <p>
-               Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. <a href="#" class="nav-toggle read">Readmore</a>
+           This is the IGU’s extensive list of Geography or Geography-related journals of the world. You can search by country, journal name, key word or other attributes.</p>
+           <p>
+           The database is periodically updated but if you have new journals to add or would like to update the entry for any journal, please contact us.
+           </p>
+           <p>
+           Database compiled initially by the University of Amsterdam.
+           </p>
+           <p>
+           See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="#" className="nav-toggle read">Readmore</a>
             </p>
           </div>
         
         </div>
         
       </div>
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">               
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">               
             <form>
               
             <Search />
 
-            <div class="form-row align-items-center">
-                <div class="col-auto my-1 col-md-2">
+            <div className="form-row align-items-center">
+                <div className="col-auto my-1 col-md-2">
                  
-                    <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                    <select className="custom-select mr-sm-2" id="inlineFormCustomSelect" onChange={this.handleCountryChange}>
                       <option selected> ALL COUNTRIES</option>
-                      <option value="1">One</option>
-                      <option value="2">Two</option>
-                      <option value="3">Three</option>
+                      {
+                        topics.map((topicName, index) => {
+                          return (
+                            <option key={topicName}>
+                              {topicName}
+                            </option>
+                          );
+                        })
+                      }
                     </select>
 
                 </div>
-                <div class="col-auto my-1 col-md-2">
+                <div className="col-auto my-1 col-md-2">
                     
-                    <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                    <select 
+                      className="custom-select mr-sm-2" 
+                      id="inlineFormCustomSelect"
+                      value={this.state.selectedLang}
+                      onChange={this.handleLanguageChange}
+                    >
                       <option selected> ALL LANGUAGES</option>
-                      <option value="1">One</option>
-                      <option value="2">Two</option>
-                      <option value="3">Three</option>
+                      {
+                        languages.map((language, index) => {
+                          return (
+                            <option key={index}>
+                              {language}
+                            </option>
+                          );
+                        })
+                      }
                     </select> 
 
                 </div>
             </div>
 
-
-<ul class="pagination table-responsive mb-2">
-              <li class="page-item active"><a class="page-link" href="#">A</a></li>
-              <li class="page-item"><a class="page-link" href="#">B</a></li>
-              <li class="page-item"><a class="page-link" href="#">D</a></li>
-              <li class="page-item"><a class="page-link" href="#">E</a></li>
-              <li class="page-item"><a class="page-link" href="#">F</a></li>
-              <li class="page-item"><a class="page-link" href="#">G</a></li>
-              <li class="page-item"><a class="page-link" href="#">H</a></li>
-              <li class="page-item"><a class="page-link" href="#">I</a></li>
-              <li class="page-item"><a class="page-link" href="#">J</a></li>
-              <li class="page-item"><a class="page-link" href="#">K</a></li>
-              <li class="page-item"><a class="page-link" href="#">L</a></li>
-              <li class="page-item"><a class="page-link" href="#">M</a></li>
-              <li class="page-item"><a class="page-link" href="#">N</a></li>
-              <li class="page-item"><a class="page-link" href="#">O</a></li>
-              <li class="page-item"><a class="page-link" href="#">P</a></li>
-              <li class="page-item"><a class="page-link" href="#">Q</a></li>
-              <li class="page-item"><a class="page-link" href="#">R</a></li>
-              <li class="page-item"><a class="page-link" href="#">S</a></li>
-              <li class="page-item"><a class="page-link" href="#">T</a></li>
-              <li class="page-item"><a class="page-link" href="#">U</a></li>
-              <li class="page-item"><a class="page-link" href="#">V</a></li>
-              <li class="page-item"><a class="page-link" href="#">W</a></li>
-              <li class="page-item"><a class="page-link" href="#">X</a></li>
-              <li class="page-item"><a class="page-link" href="#">Y</a></li>
-              <li class="page-item"><a class="page-link" href="#">Z</a></li>
-            </ul>
-
-
-
+            {
+              <Pagination {...this.props} onClick={(event) => {
+                this.props.onResultsLoading(true);
+                this.props.onFilterJournalsByName(event.target.value);
+              }} 
+            />
+            }
             </form>   
           </div>
         </div>
-      </div>      
- 
-      <div class="container">
-        <div class="row">
-          <div class="results">
-            Results section
-          </div>
-        </div>
-        
-        <div class="result-view">
-          <div>
-            <div class="container">
-              <div class="row">
-                  <div class="results_section col-md-12">
-                    
-                    <h3>Australian forestry jounal</h3>
-                  </div>
-                  
-                  <div class="results_info col-lg-8">
-                    <span><a class="print" href="#">Country.</a> Australia</span>
-                    <span><a class="print" href="#">Print ISSN.</a> 14486563</span>
-                    <span><a class="print" href="#">e ISSN.</a> 21595356</span>
-                    <span><a class="print" href="#">City Published.</a> Melbourne</span>
-                   <span> <a class="print" href="#">Publisher.</a> Environment Institute of Australia and New Zealand and Taylor and Francis</span>
-                    <span><a class="print" href="#">Editor.</a> Helen Ross (University of Queensland) and R. W. (Bill) Carter (University of the Sunshine Coast)</span>
-                    <span><a class="print" href="#">Editor Information.</a> ajem@uq.edu.au </span>
-                    <span><a class="print" href="#">Language.</a> English</span>
-                    <span><a class="print" href="#">Since.</a> 2003</span>
-                    <span><a class="print" href="#">Print.</a> 0 </span>
-                    <span><a class="print" href="#">ISI.</a> -</span>                  
-                    <span><a class="print" href="#">ISI Category.</a> </span>
-                    <span><a class="print" href="#">5 Year Impact Factor.</a> 0</span>
-                    <span><a class="print" href="#">Website.</a> Follow Link</span>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br />
-        <div class="mr-sm-2"></div>
-        
-        <div class="result-view">
-          <div>
-            <div class="container">
-              <div class="row">
-                  <div class="results_section col-md-12">
-                    
-                    <h3>Australian geographer</h3>
-                  </div>
-                  
-                  <div class="results_info col-lg-8">
-                    <span><a class="print" href="#">Country.</a> Australia</span>
-                    <span><a class="print" href="#">Print ISSN.</a> 00049158 </span>
-                    <span><a class="print" href="#">e ISSN.</a> -</span>
-                    <span><a class="print" href="#">City Published.</a> Perth</span>
-                   <span> <a class="print" href="#">Publisher.</a> Institute of Foresters of Australia </span>
-                    <span><a class="print" href="#">Editor.</a> Dr Brian Turner</span>
-                    <span><a class="print" href="#">Editor Information.</a> ifa@forestry.org.au </span>
-                    <span><a class="print" href="#">Language.</a> English</span>
-                    <span><a class="print" href="#">Since.</a> 1936 </span>
-                    <span><a class="print" href="#">Print.</a> 0</span>
-                    <span><a class="print" href="#">ISI.</a> 0</span>                  
-                    <span><a class="print" href="#">ISI Category.</a> - </span>
-                    <span><a class="print" href="#">5 Year Impact Factor.</a> 0  </span>
-                    <span><a class="print" href="#">Website.</a> Follow Link</span>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="mr-sm-2"></div>
-        <br />
-        
-        
-        <div class="result-view">
-          <div>
-            <div class="container">
-              <div class="row">
-                  <div class="results_section col-md-12">
-                    
-                    <h3>Australasian Journal of Environmental Management</h3>
-                  </div>
-                  
-                  <div class="results_info col-lg-8">
-                    <span><a class="print" href="#">Country.</a> Australia</span>
-                    <span><a class="print" href="#">Print ISSN.</a> 00049158 </span>
-                    <span><a class="print" href="#">e ISSN.</a> -</span>
-                    <span><a class="print" href="#">City Published.</a> Perth</span>
-                   <span> <a class="print" href="#">Publisher.</a> Institute of Foresters of Australia </span>
-                    <span><a class="print" href="#">Editor.</a> Dr Brian Turner</span>
-                    <span><a class="print" href="#">Editor Information.</a> ifa@forestry.org.au </span>
-                    <span><a class="print" href="#">Language.</a> English</span>
-                    <span><a class="print" href="#">Since.</a> 1936 </span>
-                    <span><a class="print" href="#">Print.</a> 0</span>
-                    <span><a class="print" href="#">ISI.</a> 0</span>                  
-                    <span><a class="print" href="#">ISI Category.</a> - </span>
-                    <span><a class="print" href="#">5 Year Impact Factor.</a> 0  </span>
-                    <span><a class="print" href="#">Website.</a> Follow Link</span>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
+
+      <Results results={this.props.data} />
+
     </section>
-
-
-
-
-
     );
   }
 }

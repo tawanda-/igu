@@ -2,8 +2,6 @@ import React from 'react';
 
 const journal = (props) => {
 
-    console.log(Object.keys(props.journal));
-
     return(
         <div>
         <div className="result-view">

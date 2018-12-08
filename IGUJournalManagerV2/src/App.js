@@ -97,18 +97,7 @@ class App extends Component {
           <div class="col-md-12">               
             <form>
               
-            <div class="container">
-                <div class="row">
-                  <div class="input-group search col-md-8">
-                      <input type="text" class="form-control" placeholder="SEARCH BY JOURNAL NAME" />
-                      <div class="input-group col-md-3">
-                          <button type="button" class="btn"> CLICK SEARCH</button>
-                      </div>
-                  </div>
-              </div>
-            </div> 
-
-
+            <Search />
 
             <div class="form-row align-items-center">
                 <div class="col-auto my-1 col-md-2">

@@ -24,6 +24,10 @@ h1, h2, h3, h4, h5, h6,
 	color:#124a7d;  
 }
 
+a.header-link{
+  color:#124a7d;
+}
+
 .page-link {
 
     position: relative;
@@ -130,4 +134,11 @@ h1, h2, h3, h4, h5, h6,
 .form-control{
   font-family: "Roboto Condensed";
   font-weight: 40;
+}
+
+a.print{
+  cursor: text;
+}
+a.print:hover{
+  text-decoration: none;
 }

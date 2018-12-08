@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
-import Pagination from './components/Pagination';
 import axiosInstance from './api/axios';
 import { DEV_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
-import { Spin, Icon } from 'antd';
-
-const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
+import Loader from 'react-loader-spinner';
 
 class App extends Component {
 
@@ -16,13 +13,6 @@ class App extends Component {
     selectedLang: 'All Languages',
     selectedCountry: '',
     languages: []
-  }
-
-  constructor(props) {
-    super(props);
-    this.handleCountryChange = this.handleCountryChange.bind(this);
-    this.handleLanguageChange = this.handleLanguageChange.bind(this);
-    this.pagination = this.pagination.bind(this);
   }
 
   componentDidMount() {
@@ -52,41 +42,28 @@ class App extends Component {
     });
   }
 
-  handleCountryChange(event) {
+  handleCountryChange = (event) => {
     this.setState({selectedCountry: event.target.value, selectedLang: ''});
     this.props.onResultsLoading(true);
     this.props.onFilterJournalsByCountry(event.target.value);
   }
 
-  handleLanguageChange(event) {
+  handleLanguageChange = (event) => {
     this.setState({selectedLang: event.target.value});
     this.props.onResultsLoading(true);
     this.props.onFilterJournalsByLanguage(this.state.selectedCountry , event.target.value);
+    this.handleJournalNameFilterClicked = this.handleJournalNameFilterClicked.bind(this);
   }
 
-  pagination = () => {
-    const listItems = this.props.paginationList.map((character, index) =>
-        <li 
-            className="page-item" 
-            key={index}
-            onClick={(event) => {
-                this.props.onResultsLoading(true);
-                this.props.onFilterJournalsByName(event.target.value);
-            }}
-            active={this.props.selectedPaginationChar === character}
-        >
-            <a className="page-link" href="#">{character}</a>
-        </li>
-    );
-    return (
-      <ul className="pagination table-responsive mb-2">{listItems}</ul>
-    );
+  onItemClick = (event) => {
+    event.preventDefault();
+    this.props.onResultsLoading(true);
+    this.props.onFilterJournalsByName(event.target.id);
   }
-
-  //<Loader type="Oval" color="#4285f4" height={60} width={60} />
+ 
   render() {
 
-    var topics = [], languages = [];
+    let topics = [], languages = [];
     topics = this.props.filterList;
     languages = this.props.languageList;
 
@@ -98,7 +75,6 @@ class App extends Component {
           <div className="col-lg-8 welcome">
             <h2><b>WELCOME TO</b> IGU UGI JOURNAL DATABASE</h2>
         </div>
-
           <div className="col-lg-8 info_line lead">  
            <p>
            This is the IGU’s extensive list of Geography or Geography-related journals of the world. You can search by country, journal name, key word or other attributes.</p>
@@ -109,12 +85,10 @@ class App extends Component {
            Database compiled initially by the University of Amsterdam.
            </p>
            <p>
-           See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="#" className="nav-toggle read">Readmore</a>
+           See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
             </p>
           </div>
-        
         </div>
-        
       </div>
       <div className="container">
         <div className="row">
@@ -127,7 +101,7 @@ class App extends Component {
                 <div className="col-auto my-1 col-md-2">
                  
                     <select className="custom-select mr-sm-2" id="inlineFormCustomSelect" onChange={this.handleCountryChange}>
-                      <option selected> ALL COUNTRIES</option>
+                      <option> ALL COUNTRIES</option>
                       {
                         topics.map((topicName, index) => {
                           return (
@@ -148,7 +122,7 @@ class App extends Component {
                       value={this.state.selectedLang}
                       onChange={this.handleLanguageChange}
                     >
-                      <option selected> ALL LANGUAGES</option>
+                      <option> ALL LANGUAGES</option>
                       {
                         languages.map((language, index) => {
                           return (
@@ -163,26 +137,35 @@ class App extends Component {
                 </div>
             </div>
 
-            {
-              <Pagination {...this.props} onClick={(event) => {
-                this.props.onResultsLoading(true);
-                this.props.onFilterJournalsByName(event.target.value);
-              }} 
-            />
-            }
+            <ul className="pagination table-responsive mb-2">
+            {this.props.paginationList.map((character, index) =>
+                <li 
+                  className="page-item" 
+                  key={index}
+                >
+                  <a className="page-link" href="#" id={character} onClick={this.onItemClick}>{character}</a>
+                </li>
+              )}
+            </ul>
+
             </form>   
           </div>
         </div>
       </div>
 
-      <Results results={this.props.data} />
-
+      {
+        this.props.isResultsLoading ? 
+          (<Loader type="Oval" color="#4285f4" height={60} width={60} />) :
+          (<Results results={this.props.data} />)
+      }
+    
     </section>
     );
   }
 }
 
 const mapStateToProps = state => {
+  //console.log(state);
   return {
     data: state.tempJournals,
     paginationList: state.paginationChars,

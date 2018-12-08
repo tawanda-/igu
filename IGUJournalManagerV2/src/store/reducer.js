@@ -59,9 +59,10 @@ const reducer = (state = initialState, action) => {
             };
 
         case actionTypes.FILTER_JOURNALS_BY_NAME:
-            const tempArray = state.filterResults.filter(result => {
+
+            const tempArray = state.filterResults.filter(result => 
                 result.name_of_journal.trim().toLowerCase().startsWith(action.payload.toLowerCase())
-            });
+            );
 
             var  tempLang = [];
             for(var a=0; a< tempArray.length; a++) {

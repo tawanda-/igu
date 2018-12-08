@@ -22,9 +22,9 @@ class Search extends Component {
 
     render() {
         return (
-            <div class="container">
-                <div class="row">
-                    <div class="input-group search col-md-8">
+            <div className="container">
+                <div className="row">
+                    <div className="input-group search col-md-8">
                         <input 
                             className="form-control"
                             type="text"
@@ -32,10 +32,10 @@ class Search extends Component {
                             value={this.state.searchTerm}
                             onChange={this.handleChange} 
                         />
-                        <div class="input-group col-md-3">
+                        <div className="input-group col-md-3">
                             <button 
                                 type="button" 
-                                class="btn"
+                                className="btn"
                                 value={this.state.searchTerm}
                                 onClick={() => this.props.onSearchJournalsByName(this.state.searchTerm)}>
                                     CLICK SEARCH

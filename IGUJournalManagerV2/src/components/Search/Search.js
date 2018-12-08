@@ -25,7 +25,6 @@ class Search extends Component {
             <div class="container">
                 <div class="row">
                     <div class="input-group search col-md-8">
-                        <input type="text" class="form-control" ></input>
                         <input 
                             className="form-control"
                             type="text"
@@ -37,6 +36,7 @@ class Search extends Component {
                             <button 
                                 type="button" 
                                 class="btn"
+                                value={this.state.searchTerm}
                                 onClick={() => this.props.onSearchJournalsByName(this.state.searchTerm)}>
                                     CLICK SEARCH
                             </button>

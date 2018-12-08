@@ -1,5 +1,4 @@
 import React from 'react';
-import './JournalItem.css';
 
 const journal = (props) => {
 

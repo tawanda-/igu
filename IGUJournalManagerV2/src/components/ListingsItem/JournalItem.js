@@ -13,7 +13,7 @@ const journal = (props) => {
                             {
                                 props.journal.website ?
                                 (<h3>
-                                    <a class="header-link" href={props.journal.website}>{props.journal.name_of_journal} </a>
+                                    <a className="header-link" href={props.journal.website}>{props.journal.name_of_journal} </a>
                                 </h3>) :
                                 (<h3>{props.journal.name_of_journal}</h3>)
                             }

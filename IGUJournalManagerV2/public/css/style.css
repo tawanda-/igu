@@ -137,7 +137,7 @@ a.header-link{
 }
 
 a.print{
-  cursor: text;
+  cursor: pointer;
 }
 a.print:hover{
   text-decoration: none;

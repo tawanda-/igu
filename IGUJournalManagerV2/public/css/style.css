@@ -115,9 +115,14 @@ a.header-link{
   right: 13px;
 }
 
-.results_info a {
+.results_info span a {
   color: #124a7d;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.results_info a:hover {
+  cursor: pointer;
 }
 
 .pagination{
@@ -136,9 +141,10 @@ a.header-link{
   font-weight: 40;
 }
 
-a.print{
-  cursor: pointer;
+print{
+  cursor: default;
 }
-a.print:hover{
+print:hover{
   text-decoration: none;
+  cursor: default;
 }

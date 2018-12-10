@@ -15,7 +15,8 @@ const journal = (props) => {
                                 (<h3>
                                     <a 
                                         className="header-link" 
-                                        href={props.journal.website} 
+                                        href={props.journal.website}
+                                        rel="noreferrer noopener"
                                         target="_blank"
                                     >
                                         {props.journal.name_of_journal} 
@@ -28,7 +29,7 @@ const journal = (props) => {
                         </div>
                         
                         <div className="results_info col-lg-8">
-                            <span><a className="print" href="#">Country.</a> {props.journal.country} </span>
+                            <span><a className="print" href="#" role="button">Country.</a> {props.journal.country} </span>
                             {
                                 props.journal.print_issn && 
                                 <span><a className="print" href="#">Print ISSN.</a> {props.journal.print_issn} </span>

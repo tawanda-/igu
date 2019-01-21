@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
 import axiosInstance from './api/axios';
-import { DEV_BASE_URL, WP_ACTION } from './api/settings';
+import { PROD_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
 import Loader from 'react-loader-spinner';
@@ -31,7 +31,7 @@ class App extends Component {
 
     //todo: configure setting baseUrl
     var self = this;
-    axiosInstance.post(DEV_BASE_URL, querystring.stringify(searchParams))
+    axiosInstance.post(PROD_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
         self.props.onResultsLoading(true);
         self.props.onStoreResult(response.data);
@@ -87,6 +87,9 @@ class App extends Component {
            <p>
            See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
             </p>
+            <p>
+            Inclusion of a journal on this site does not in any way imply that IGU endorses the publication in question.  Users are also encouraged to check Beall’s list of Predatory Journals and Publishers, to ensure that the publication they wish to consult is genuine. Click <a href="https://beallslist.weebly.com" className="nav-toggle read">Here</a>
+            </p>
           </div>
         </div>
       </div>
@@ -100,17 +103,23 @@ class App extends Component {
             <div className="form-row align-items-center">
                 <div className="col-auto my-1 col-md-2">
                  
-                    <select className="custom-select mr-sm-2" id="inlineFormCustomSelect" onChange={this.handleCountryChange}>
-                      <option> ALL COUNTRIES</option>
-                      {
-                        topics.map((topicName, index) => {
-                          return (
-                            <option key={topicName}>
-                              {topicName}
-                            </option>
-                          );
-                        })
-                      }
+                    <select 
+                      className="custom-select mr-sm-2" 
+                      id="inlineFormCustomSelect" 
+                      onChange={this.handleCountryChange}
+                      style={{borderRadius: '4px'}}
+                    >
+                      <option> ALL COUNTRIES</option
+                      >
+                        {
+                          topics.map((topicName, index) => {
+                            return (
+                              <option key={topicName}>
+                                {topicName}
+                              </option>
+                            );
+                          })
+                        }
                     </select>
 
                 </div>
@@ -121,6 +130,7 @@ class App extends Component {
                       id="inlineFormCustomSelect"
                       value={this.state.selectedLang}
                       onChange={this.handleLanguageChange}
+                      style={{borderRadius: '4px'}}
                     >
                       <option> ALL LANGUAGES</option>
                       {

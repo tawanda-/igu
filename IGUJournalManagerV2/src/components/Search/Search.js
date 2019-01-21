@@ -28,12 +28,14 @@ class Search extends Component {
                         <input 
                             className="form-control"
                             type="text"
+                            style={{borderRadius: '4px', fontFamily: "Roboto Condensed", fontWeight: 40, height: '100%'}}
                             placeholder="SEARCH BY JOURNAL NAME"
                             value={this.state.searchTerm}
                             onChange={this.handleChange} 
                         />
                         <div className="input-group col-md-3">
                             <button 
+                                style={{borderRadius: '4px'}}
                                 type="button" 
                                 className="btn"
                                 value={this.state.searchTerm}

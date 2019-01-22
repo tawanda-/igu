@@ -88,7 +88,7 @@ class App extends Component {
            See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
             </p>
             <p>
-            Inclusion of a journal on this site does not in any way imply that IGU endorses the publication in question.  Users are also encouraged to check Beall’s list of Predatory Journals and Publishers, to ensure that the publication they wish to consult is genuine. Click <a href="https://beallslist.weebly.com" className="nav-toggle read">Here</a>
+            Inclusion of a journal on this site does not in any way imply that IGU endorses the publication in question.  Users are also encouraged to check Beall’s list of Predatory Journals and Publishers, to ensure that the publication they wish to consult is genuine. Click <a href="https://beallslist.weebly.com" target="_blank" className="nav-toggle read">Here</a>
             </p>
           </div>
         </div>

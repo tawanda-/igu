@@ -1,28 +1,199 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux';
+import Search from './components/Search/Search';
+import axiosInstance from './api/axios';
+import { PROD_BASE_URL, WP_ACTION } from './api/settings';
+import * as actionCreators from './store/actions';
+import Results from './components/Results/Results';
+import Loader from 'react-loader-spinner';
 
 class App extends Component {
+
+  state = {
+    selectedLang: 'All Languages',
+    selectedCountry: '',
+    languages: []
+  }
+
+  componentDidMount() {
+    this.initialDataLoad();
+  }
+
+  initialDataLoad = () => {
+    var name = "all";
+    var filter = "all";
+    const querystring = require('querystring');
+    const searchParams = {
+        action: WP_ACTION,
+        name: name,
+        filter: filter
+    };
+
+    //todo: configure setting baseUrl
+    var self = this;
+    axiosInstance.post(PROD_BASE_URL, querystring.stringify(searchParams))
+    .then(function (response){
+        self.props.onResultsLoading(true);
+        self.props.onStoreResult(response.data);
+    })
+    .catch(function(error) {
+        self.props.onResultsLoading(false);
+        console.log(error);
+    });
+  }
+
+  handleCountryChange = (event) => {
+    this.setState({selectedCountry: event.target.value, selectedLang: ''});
+    this.props.onResultsLoading(true);
+    this.props.onFilterJournalsByCountry(event.target.value);
+  }
+
+  handleLanguageChange = (event) => {
+    this.setState({selectedLang: event.target.value});
+    this.props.onResultsLoading(true);
+    this.props.onFilterJournalsByLanguage(this.state.selectedCountry , event.target.value);
+    this.handleJournalNameFilterClicked = this.handleJournalNameFilterClicked.bind(this);
+  }
+
+  onItemClick = (event) => {
+    event.preventDefault();
+    this.props.onResultsLoading(true);
+    this.props.onFilterJournalsByName(event.target.id);
+  }
+ 
   render() {
+
+    let topics = [], languages = [];
+    topics = this.props.filterList;
+    languages = this.props.languageList;
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+
+      <section id="about">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-8 welcome">
+            <h2><b>WELCOME TO</b> IGU UGI JOURNAL DATABASE</h2>
+        </div>
+          <div className="col-lg-8 info_line lead">  
+           <p>
+           This is the IGU’s extensive list of Geography or Geography-related journals of the world. You can search by country, journal name, key word or other attributes.</p>
+           <p>
+           The database is periodically updated but if you have new journals to add or would like to update the entry for any journal, please contact us.
+           </p>
+           <p>
+           Database compiled initially by the University of Amsterdam.
+           </p>
+           <p>
+           See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
+            </p>
+            <p>
+            Inclusion of a journal on this site does not in any way imply that IGU endorses the publication in question.  Users are also encouraged to check Beall’s list of Predatory Journals and Publishers, to ensure that the publication they wish to consult is genuine. Click <a href="https://beallslist.weebly.com" target="_blank" className="nav-toggle read">Here</a>
+            </p>
+          </div>
+        </div>
       </div>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">               
+            <form>
+              
+            <Search />
+
+            <div className="form-row align-items-center">
+                <div className="col-auto my-1 col-md-2">
+                 
+                    <select 
+                      className="custom-select mr-sm-2" 
+                      id="inlineFormCustomSelect" 
+                      onChange={this.handleCountryChange}
+                      style={{borderRadius: '4px'}}
+                    >
+                      <option> ALL COUNTRIES</option
+                      >
+                        {
+                          topics.map((topicName, index) => {
+                            return (
+                              <option key={topicName}>
+                                {topicName}
+                              </option>
+                            );
+                          })
+                        }
+                    </select>
+
+                </div>
+                <div className="col-auto my-1 col-md-2">
+                    
+                    <select 
+                      className="custom-select mr-sm-2" 
+                      id="inlineFormCustomSelect"
+                      value={this.state.selectedLang}
+                      onChange={this.handleLanguageChange}
+                      style={{borderRadius: '4px'}}
+                    >
+                      <option> ALL LANGUAGES</option>
+                      {
+                        languages.map((language, index) => {
+                          return (
+                            <option key={index}>
+                              {language}
+                            </option>
+                          );
+                        })
+                      }
+                    </select> 
+
+                </div>
+            </div>
+
+            <ul className="pagination table-responsive mb-2">
+            {this.props.paginationList.map((character, index) =>
+                <li 
+                  className="page-item" 
+                  key={index}
+                >
+                  <a className="page-link" href="#" id={character} onClick={this.onItemClick}>{character}</a>
+                </li>
+              )}
+            </ul>
+
+            </form>   
+          </div>
+        </div>
+      </div>
+
+      {
+        this.props.isResultsLoading ? 
+          (<Loader type="Oval" color="#4285f4" height={60} width={60} />) :
+          (<Results results={this.props.data} />)
+      }
+    
+    </section>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  //console.log(state);
+  return {
+    data: state.tempJournals,
+    paginationList: state.paginationChars,
+    filterList: state.filterTerms,
+    languageList: state.languageTerms,
+    selectedPaginationChar : state.topicFilter,
+    isResultsLoading: state.resultsLoading
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onFilterJournalsByLanguage: (country, language) => dispatch(actionCreators.filterJournalsByLanguage(country, language)),
+    onFilterJournalsByName: (character) => dispatch(actionCreators.filterJournalsByName(character)),
+    onFilterJournalsByCountry: (country) => dispatch(actionCreators.filterJournalsByCountry(country)),
+    onStoreResult: (data) => dispatch(actionCreators.storeResult(data)),
+    onResultsLoading: (isLoading) => dispatch(actionCreators.resultsLoading(isLoading))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps) (App);

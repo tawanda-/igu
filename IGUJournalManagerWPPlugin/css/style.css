@@ -1,0 +1,157 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900);
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700);
+
+.body{
+	color: black;
+}
+.lead{
+	color:blue;
+}
+
+.info_line{
+	color:black;
+	font-size: 12px;
+}
+
+.read{
+  color:#124a7d;
+  font-weight: bold;
+
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+	color:#124a7d;  
+}
+
+a.header-link{
+  color:#124a7d;
+}
+
+.page-link {
+
+    position: relative;
+    display: block;
+    padding: .5rem .75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #fff;
+    background-color: #C4D4DC;
+    border-radius: 0px;
+}
+
+.page-link{
+  
+  background-color: #C4D4DC;
+  border-color: #C4D4DC;
+}
+
+.page-item.active .page-link {
+	 z-index: 1;
+   color: #124a7d;
+   background-color: #C4D4DC;
+   border-color: #C4D4DC;
+	 font-weight: bolder;
+	 border-radius: 0px;
+}
+
+.page-link:hover{
+  font-weight: 700; 
+}
+
+.form-control::-webkit-input-placeholder { color: #124a7d; }  /* WebKit, Blink, Edge */
+.form-control:-moz-placeholder { color: #124a7d; }  /* Mozilla Firefox 4 to 18 */
+.form-control::-moz-placeholder { color: #124a7d; }  /* Mozilla Firefox 19+ */
+.form-control:-ms-input-placeholder { color: #124a7d; }  /* Internet Explorer 10-11 */
+.form-control::-ms-input-placeholder { color: #124a7d; }  /* Microsoft Edge */
+
+.btn{
+   
+   color: #fff;
+   background-color: #124a7d;
+   border-color: #124a7d;
+}
+
+.btn:hover{
+	color: #124a7d;
+	background-color: #ffffff;
+}
+.search{
+	left:-15px;
+}
+
+.custom-select {  
+  display: inline-block;
+  width: 100%;
+  height: calc(2.25rem + 2px);
+  padding: .375rem 1.75rem .375rem .75rem;
+  line-height: 1.5;
+  color: #124a7d;
+  border-radius: 0px 0px;
+  /*! font-family: "Roboto Consened"; */
+  font-weight: 40;
+}
+
+.results {
+  
+  text-transform: uppercase;
+  font-size: 15px;
+  padding: 14px;
+  margin-left: 3px;
+}
+
+.results_section{
+  
+  right: 12px;
+}
+
+.results_section h3{
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.results_info {
+  font-size: small;
+  right: 13px;
+}
+
+.results_info span {
+  cursor: default;
+  text-decoration:  none;
+}
+
+.results_info a {
+  color: #124a7d;
+  font-weight: 700;
+  cursor: default;
+  text-decoration:  none;
+}
+
+.results_info a:hover {
+  cursor: default;
+  text-decoration:  none;
+}
+
+.pagination{
+  color: #C4D4DC;
+  font-family: "Roboto Condensed";
+}
+
+.welcome{
+  
+  font-family: "Roboto Condensed";
+  
+}
+
+.form-control{
+  font-family: "Roboto Condensed";
+  font-weight: 40;
+}
+
+.print{
+  cursor: default;
+}
+.print:hover{
+  text-decoration: none;
+  cursor: default;
+}

@@ -34,7 +34,7 @@ function my_footer_scripts(){
     wp_enqueue_script("chunk1-js", plugin_dir_url( __FILE__ ) . "static/js/1.706fab41.chunk.js", array(), "" );
     wp_enqueue_script("chunk1-js");
 
-    wp_enqueue_script("chunk2-js", plugin_dir_url( __FILE__ ) . "static/js/main.c9711e99.chunk.js", array(), "" );
+    wp_enqueue_script("chunk2-js", plugin_dir_url( __FILE__ ) . "static/js/main.b81a786f.chunk.js", array(), "" );
     wp_enqueue_script("chunk2-js");
 }
 

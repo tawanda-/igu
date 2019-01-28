@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
 import axiosInstance from './api/axios';
-import { PROD_BASE_URL, WP_ACTION } from './api/settings';
+import { PROD_BASE_URL, DEV_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
 import Loader from 'react-loader-spinner';
@@ -30,6 +30,7 @@ class App extends Component {
     };
 
     //todo: configure setting baseUrl
+    /*
     var self = this;
     axiosInstance.post(PROD_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
@@ -40,6 +41,26 @@ class App extends Component {
         self.props.onResultsLoading(false);
         console.log(error);
     });
+    */
+
+   var self = this;
+    const request = new Request(PROD_BASE_URL,{
+      method: 'POST',
+      headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+      body: JSON.stringify(searchParams),
+    });
+
+    return fetch(request).then(response => {
+        //return response.json();
+        self.props.onResultsLoading(true);
+        self.props.onStoreResult(response.data);
+    }
+    ).catch(error => {
+        return error;
+    });
+
+
+    
   }
 
   handleCountryChange = (event) => {

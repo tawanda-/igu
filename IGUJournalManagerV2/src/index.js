@@ -1,4 +1,6 @@
 import React from 'react';
+import 'babel-polyfill'; 
+import 'react-app-polyfill/ie11';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
-import axiosInstance from './api/axios';
-import { PROD_BASE_URL, DEV_BASE_URL, WP_ACTION } from './api/settings';
+import { PROD_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
 import Loader from 'react-loader-spinner';
@@ -22,7 +21,7 @@ class App extends Component {
   initialDataLoad = () => {
     var name = "all";
     var filter = "all";
-    const querystring = require('querystring');
+    //const querystring = require('querystring');
     const searchParams = {
         action: WP_ACTION,
         name: name,
@@ -109,7 +108,7 @@ class App extends Component {
            See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
             </p>
             <p>
-            In listing titles in this database, IGU is in no way endorsing the contents therein, which remain entirely the responsibility of the editors of the journals in question.  Users are alerted to the problem of so-called ‘predatory’ journals and are directed to<br /> <a href="https://beallslist.weebly.com/standalone-journals.html" target="_blank">Beall’s list of Predatory Journals and Publishers</a> to check credibility of the entries.
+            In listing titles in this database, IGU is in no way endorsing the contents therein, which remain entirely the responsibility of the editors of the journals in question.  Users are alerted to the problem of so-called ‘predatory’ journals and are directed to<br /> <a href="https://beallslist.weebly.com/standalone-journals.html" target="_blank" rel="noopener noreferrer">Beall’s list of Predatory Journals and Publishers</a> to check credibility of the entries.
             </p>
           </div>
         </div>

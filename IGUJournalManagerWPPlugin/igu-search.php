@@ -20,7 +20,7 @@ function igu_load_css_js(){
     
     wp_enqueue_style("igu-style-css", plugin_dir_url( __FILE__ )."css/style.css");
     
-    wp_enqueue_style("chunk-css", plugin_dir_url( __FILE__ )."static/css/1.117d154e.chunk.css");
+    wp_enqueue_style("chunk-css", plugin_dir_url( __FILE__ )."static/css/1.54be5b4f.chunk.css");
     
     wp_enqueue_script("iguScript-js", plugin_dir_url( __FILE__ ) . "js/iguScript.js", array(), "" );
     wp_enqueue_script("iguScript-js");
@@ -31,10 +31,10 @@ function igu_load_css_js(){
 add_action( 'wp_footer', 'my_footer_scripts' );
 function my_footer_scripts(){
     
-    wp_enqueue_script("chunk1-js", plugin_dir_url( __FILE__ ) . "static/js/1.706fab41.chunk.js", array(), "" );
+    wp_enqueue_script("chunk1-js", plugin_dir_url( __FILE__ ) . "static/js/1.f2fb7eb2.chunk.js", array(), "" );
     wp_enqueue_script("chunk1-js");
 
-    wp_enqueue_script("chunk2-js", plugin_dir_url( __FILE__ ) . "static/js/main.b81a786f.chunk.js", array(), "" );
+    wp_enqueue_script("chunk2-js", plugin_dir_url( __FILE__ ) . "static/js/main.949fa29a.chunk.js", array(), "" );
     wp_enqueue_script("chunk2-js");
 }
 
@@ -48,6 +48,8 @@ add_shortcode('igujournalssearchbar', 'igusearchbar');
 
 
 function igutoggle(){
+    
+    //var_dump($_POST);
 
 	if($_POST === " " || $_POST === "" ){
 		echo json_encode (new stdClass);

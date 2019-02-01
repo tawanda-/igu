@@ -21,7 +21,7 @@ class App extends Component {
   initialDataLoad = () => {
     var name = "all";
     var filter = "all";
-    //const querystring = require('querystring');
+    const querystring = require('querystring');
     const searchParams = {
         action: WP_ACTION,
         name: name,
@@ -46,13 +46,12 @@ class App extends Component {
     const request = new Request(PROD_BASE_URL,{
       method: 'POST',
       headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-      body: JSON.stringify(searchParams),
+      body: querystring.stringify(searchParams),
     });
 
-    return fetch(request).then(response => {
-        //return response.json();
+    return fetch(request).then(response => response.json()).then(response => {
         self.props.onResultsLoading(true);
-        self.props.onStoreResult(response.data);
+        self.props.onStoreResult(response);
     }
     ).catch(error => {
         return error;

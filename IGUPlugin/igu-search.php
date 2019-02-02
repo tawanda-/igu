@@ -85,7 +85,7 @@ function frontendSearch_footer_scripts(){
 add_action('wp_ajax_the_ajax_hook', 'processRequest');
 add_action('wp_ajax_nopriv_the_ajax_hook', 'processRequest');
 
-/** Added to Journals Page to display search bar */
+/** Journals Page UI to display search bar */
 function igusearchbar(){
 	global $html_output;
 	return $html_output;
@@ -93,6 +93,15 @@ function igusearchbar(){
 add_shortcode('igujournalssearchbar', 'igusearchbar');
 
 /** END Search Bar */
+
+/** Journals Admin Page UI */
+
+function iguadminui(){
+
+}
+add_shortcode('igujournalsadminui', 'iguadminui');
+
+/** END Journlas Admin Page UI */
 
 /** Database queries */
 

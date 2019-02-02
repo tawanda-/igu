@@ -15,7 +15,10 @@ class App extends Component {
         <Layout>
           <Header>
             <Link to="/">
-              <button>home</button>
+              <button>Home</button>
+            </Link>
+            <Link to="/">
+              <button>Search Journals</button>
             </Link>
             <Link to="/upload">
               <button>Upload CSV</button>

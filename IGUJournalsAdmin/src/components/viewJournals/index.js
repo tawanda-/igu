@@ -3,7 +3,11 @@ import React, {Component} from 'react';
 class viewJournals extends Component{
 
     render(){
-        return(<div></div>);
+        return(
+            <div>
+                
+            </div>
+        );
     }
 
 }

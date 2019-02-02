@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
-import axiosInstance from './api/axios';
 import { PROD_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
@@ -30,6 +29,7 @@ class App extends Component {
     };
 
     //todo: configure setting baseUrl
+    /*
     var self = this;
     axiosInstance.post(PROD_BASE_URL, querystring.stringify(searchParams))
     .then(function (response){
@@ -40,6 +40,25 @@ class App extends Component {
         self.props.onResultsLoading(false);
         console.log(error);
     });
+    */
+
+   var self = this;
+    const request = new Request(PROD_BASE_URL,{
+      method: 'POST',
+      headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+      body: querystring.stringify(searchParams),
+    });
+
+    return fetch(request).then(response => response.json()).then(response => {
+        self.props.onResultsLoading(true);
+        self.props.onStoreResult(response);
+    }
+    ).catch(error => {
+        return error;
+    });
+
+
+    
   }
 
   handleCountryChange = (event) => {
@@ -88,7 +107,7 @@ class App extends Component {
            See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
             </p>
             <p>
-            Inclusion of a journal on this site does not in any way imply that IGU endorses the publication in question.  Users are also encouraged to check Beall’s list of Predatory Journals and Publishers, to ensure that the publication they wish to consult is genuine. Click <a href="https://beallslist.weebly.com" target="_blank" className="nav-toggle read">Here</a>
+            In listing titles in this database, IGU is in no way endorsing the contents therein, which remain entirely the responsibility of the editors of the journals in question.  Users are alerted to the problem of so-called ‘predatory’ journals and are directed to<br /> <a href="https://beallslist.weebly.com/standalone-journals.html" target="_blank" rel="noopener noreferrer">Beall’s list of Predatory Journals and Publishers</a> to check credibility of the entries.
             </p>
           </div>
         </div>

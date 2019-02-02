@@ -24,11 +24,16 @@ class Search extends Component {
         return (
             <div className="container">
                 <div className="row">
-                    <div className="input-group search col-md-8">
+                    <div className="input-group search col-md-8" style={{paddingLeft: '16px'}}>
                         <input 
                             className="form-control"
                             type="text"
-                            style={{borderRadius: '4px', fontFamily: "Roboto Condensed", fontWeight: 40, height: '100%'}}
+                            style={{
+                                borderRadius: '4px', 
+                                fontFamily: "Roboto Condensed", 
+                                fontWeight: 40, 
+                                height: '100%'
+                            }}
                             placeholder="SEARCH BY JOURNAL NAME"
                             value={this.state.searchTerm}
                             onChange={this.handleChange} 

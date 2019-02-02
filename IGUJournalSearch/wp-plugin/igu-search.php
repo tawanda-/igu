@@ -11,6 +11,15 @@ Author: Tawanda Muhwati, Ngoni Munyaradzi
 Version: 2.0
 */
 
+function check_logged_in()
+{
+    if ( is_user_logged_in() ) 
+    {
+        // code
+    }
+}
+add_action('init', 'check_logged_in');
+
 add_action( 'wp_enqueue_scripts', 'igu_load_css_js' );
 function igu_load_css_js(){
     

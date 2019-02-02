@@ -28,20 +28,6 @@ class App extends Component {
         filter: filter
     };
 
-    //todo: configure setting baseUrl
-    /*
-    var self = this;
-    axiosInstance.post(PROD_BASE_URL, querystring.stringify(searchParams))
-    .then(function (response){
-        self.props.onResultsLoading(true);
-        self.props.onStoreResult(response.data);
-    })
-    .catch(function(error) {
-        self.props.onResultsLoading(false);
-        console.log(error);
-    });
-    */
-
    var self = this;
     const request = new Request(PROD_BASE_URL,{
       method: 'POST',
@@ -56,9 +42,6 @@ class App extends Component {
     ).catch(error => {
         return error;
     });
-
-
-    
   }
 
   handleCountryChange = (event) => {

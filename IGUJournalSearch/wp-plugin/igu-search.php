@@ -11,12 +11,39 @@ Author: Tawanda Muhwati, Ngoni Munyaradzi
 Version: 2.0
 */
 
+$html_output = "";
+
 function check_logged_in()
 {
     if ( is_user_logged_in() ) 
     {
-        // code
-    }
+
+		$GLOBALS['html_output'] = '
+			<div style="
+				padding-left: 15px;
+				margin-bottom: 10px;
+			">
+				<button
+					style="
+						border-radius: 4px;
+						color: #fff;
+						background-color: #124a7d;
+						border-color: #124a7d;
+						margin-bottom
+					"
+					class="btn"
+				>
+					<a 
+						style="color:#fff"
+						href="journals-admin">
+						Edit Journals
+					</a>
+				</button>
+			</div>
+			<div id="journals"></div>';
+    }else{
+		$GLOBALS['html_output'] = '<div id="journals"></div>';
+	}
 }
 add_action('init', 'check_logged_in');
 
@@ -51,22 +78,18 @@ add_action('wp_ajax_the_ajax_hook', 'igutoggle');
 add_action('wp_ajax_nopriv_the_ajax_hook', 'igutoggle');
 
 function igusearchbar(){
-	return '<div id="journals"></div>';
+	global $html_output;
+	return $html_output;
 }
 add_shortcode('igujournalssearchbar', 'igusearchbar');
 
-
 function igutoggle(){
-    
-    //var_dump($_POST);
 
 	if($_POST === " " || $_POST === "" ){
 		echo json_encode (new stdClass);
 		die();
 	}
 
-	//validate data - remove illegal characters strip whitespaces
-	//$needle = sanitize_key(sanitize_text_field($_POST['name']));
 	$needle = sanitize_text_field($_POST['name']);
 	$filter = sanitize_key(sanitize_text_field(strtolower($_POST['filter'])));
 	

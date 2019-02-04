@@ -17,7 +17,7 @@ class App extends Component {
             <Link to="/">
               <button>Home</button>
             </Link>
-            <Link to="/">
+            <Link to="/viewJournals">
               <button>Search Journals</button>
             </Link>
             <Link to="/upload">
@@ -26,7 +26,7 @@ class App extends Component {
           </Header>
           <Content>
               <div>
-                <Route exact path="/" component={viewJournals} />
+                <Route exact path="/viewJournals" component={viewJournals} />
                 <Route exact path="/upload" component={UploadCSV} />
               </div>
           </Content>

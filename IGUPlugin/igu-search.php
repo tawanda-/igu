@@ -110,7 +110,24 @@ function processRequest(){
 	if($_POST === " " || $_POST === "" ){
 		echo json_encode (new stdClass);
 		die();
+	}else if(isset($_POST['name']) && isset($_POST['filter'])){
+		getJournalsRequest($_POST['name'], $_POST['filter']);
+	}else if(isset($_POST['requestType'])){
+		if($_POST['requestType'] === 'delete_journal'){
+			var_dump($_POST['journals']);
+			var_dump(json_decode($_POST['journals']));
+			deleteJournal(json_decode($_POST['journals']));
+		}else if($_POST['requestType'] === 'update_journals'){
+			var_dump($_POST['journals']);
+			var_dump(json_decode($_POST['journals']));
+			updateJournal(json_decode($_POST['journals']));
+		}
 	}
+
+	die();
+}
+
+function getJournalsRequest($needle, $filter){
 
 	$needle = sanitize_text_field($_POST['name']);
 	$filter = sanitize_key(sanitize_text_field(strtolower($_POST['filter'])));
@@ -150,7 +167,6 @@ function processRequest(){
 	}else{
 		    echo json_encode (new stdClass);	
 	}
-	die();
 }
 
 function getBy( $column = null, $needle = null){
@@ -188,6 +204,22 @@ function country($needle){
 		return "SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE country LIKE 'south africa'";
 	else
 		return $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (country LIKE %s);", array('%'.like_escape($needle).'%'));
+}
+
+function deleteJournal($journalsArray){
+	global $wpdb;
+
+	foreach( $journalsArray as $journal){
+		echo $wpdb->delete("wp_igu_journals", array('id' => $journal['id']), array('%d'));
+	}
+}
+
+function updateJournal($journalsArray){
+	global $wpdb;
+
+	foreach( $journalsArray as $journal){
+		echo $wpdb->update( "wp_igu_journals", $journal );
+	}
 }
 
 /** END Database queries */

@@ -14,7 +14,7 @@ class App extends Component {
       <div className="App">
         <Layout>
           <Header>
-            <Link to="/">
+            <Link to="/viewJournals">
               <button>Home</button>
             </Link>
             <Link to="/viewJournals">

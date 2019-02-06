@@ -1,150 +1,470 @@
 import React, {Component} from 'react';
-import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import Paper from '@material-ui/core/Paper';
+import {
+  PagingState,
+  SortingState,
+  CustomPaging,
+  SearchState,
+  IntegratedFiltering,
 
-const columns = [
-    { dataField: 'id' , text: 'id'},
-    { dataField: 'country' , text: 'Country', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'name_of_journal' , text: 'Journal Name', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'print_issn' , text: 'Print ISSN', sort: true},
-	{ dataField: 'e_issn' , text: 'eISSN', sort: true},
-	{ dataField: 'city_of_publication' , text: 'City of Publication', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'name_of_publishing_company' , text: 'Publishing Company', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'editor' , text: 'Editor', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'editor_email_address' , text: 'Editor email Addres', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'language' , text: 'Publication language', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'since' , text: 'Since', editor: {type: Type.TEXTAREA}, sort: true},
-	{ dataField: 'isi' , text: 'ISI', sort: true},
-	{ dataField: 'isi_category' , text: 'ISI Category', sort: true},
-	{ dataField: '5_year_impact_factor' , text: '5 Year Impact Factor', sort: true}
-];
+  EditingState, SummaryState,
+  IntegratedPaging, IntegratedSorting, IntegratedSummary,
+} from '@devexpress/dx-react-grid';
+import {
+    Grid,
+    Table,
+    Toolbar,
+    SearchPanel,
+    TableHeaderRow,
+    PagingPanel,
+    TableEditRow, TableEditColumn,
+    DragDropProvider, TableColumnReordering,
+    TableFixedColumns, TableSummaryRow,
+} from '@devexpress/dx-react-grid-material-ui';
 
-const defaultSorted = [{
-    dataField: 'name',
-    order: 'desc'
-  }];
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import TableCell from '@material-ui/core/TableCell';
 
-const selectRow = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    clickToEdit: true,
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { withStyles } from '@material-ui/core/styles';
+
+import { ProgressBarCell } from '../../theme-sources/material-ui/components/progress-bar-cell';
+import { HighlightedCell } from '../../theme-sources/material-ui/components/highlighted-cell';
+import { CurrencyTypeProvider } from '../../theme-sources/material-ui/components/currency-type-provider';
+import { PercentTypeProvider } from '../../theme-sources/material-ui/components/percent-type-provider';
+
+import { Loading } from '../../theme-sources/material-ui/components/loading';
+
+const styles = theme => ({
+    lookupEditCell: {
+      paddingTop: theme.spacing.unit * 0.875,
+      paddingRight: theme.spacing.unit,
+      paddingLeft: theme.spacing.unit,
+    },
+    dialog: {
+      width: 'calc(100% - 16px)',
+    },
+    inputRoot: {
+      width: '100%',
+    },
+  });
+  
+  const AddButton = ({ onExecute }) => (
+    <div style={{ textAlign: 'center' }}>
+      <Button
+        color="primary"
+        onClick={onExecute}
+        title="Create new row"
+      >
+        New
+      </Button>
+    </div>
+  );
+  
+  const EditButton = ({ onExecute }) => (
+    <IconButton onClick={onExecute} title="Edit row">
+      <EditIcon />
+    </IconButton>
+  );
+  
+  const DeleteButton = ({ onExecute }) => (
+    <IconButton onClick={onExecute} title="Delete row">
+      <DeleteIcon />
+    </IconButton>
+  );
+  
+  const CommitButton = ({ onExecute }) => (
+    <IconButton onClick={onExecute} title="Save changes">
+      <SaveIcon />
+    </IconButton>
+  );
+  
+  const CancelButton = ({ onExecute }) => (
+    <IconButton color="secondary" onClick={onExecute} title="Cancel changes">
+      <CancelIcon />
+    </IconButton>
+  );
+
+  const commandComponents = {
+    add: AddButton,
+    edit: EditButton,
+    delete: DeleteButton,
+    commit: CommitButton,
+    cancel: CancelButton,
+  };
+  
+  const Command = ({ id, onExecute }) => {
+    const CommandButton = commandComponents[id];
+    return (
+      <CommandButton
+        onExecute={onExecute}
+      />
+    );
   };
 
-const { SearchBar, ClearSearchButton } = Search;
+  const LookupEditCellBase = ({
+    availableColumnValues, value, onValueChange, classes,
+  }) => (
+    <TableCell
+      className={classes.lookupEditCell}
+    >
+      <Select
+        value={value}
+        onChange={event => onValueChange(event.target.value)}
+        input={(
+          <Input
+            classes={{ root: classes.inputRoot }}
+          />
+  )}
+      >
+        {availableColumnValues.map(item => (
+          <MenuItem key={item} value={item}>
+            {item}
+          </MenuItem>
+        ))}
+      </Select>
+    </TableCell>
+  );
+
+export const LookupEditCell = withStyles(styles, { name: 'ControlledModeDemo' })(LookupEditCellBase);
+
+const Cell = (props) => {
+  return <Table.Cell {...props} />;
+};
+
+const EditCell = (props) => {
+  return <TableEditRow.Cell {...props} />;
+};
+
+  const getRowId = row => row.id;
 
 class viewJournals extends Component{
-    
+  constructor(props) {
+    super(props);
 
-    state = {
-        rows:[]
+    this.state = {
+
+    columns : [
+        { name: 'id' , title: 'id'},
+        { name: 'country' , title: 'Country'},
+        { name: 'name_of_journal' , title: 'Journal Name'},
+        { name: 'print_issn' , title: 'Print ISSN'},
+        { name: 'e_issn' , title: 'eISSN'},
+        { name: 'city_of_publication' , title: 'City of Publication'},
+        { name: 'name_of_publishing_company' , title: 'Publishing Company'},
+        { name: 'editor' , title: 'Editor'},
+        { name: 'editor_email_address' , title: 'Editor email Addres'},
+        { name: 'language' , title: 'Publication language'},
+        { name: 'since' , title: 'Since'},
+        { name: 'isi' , title: 'ISI'},
+        { name: 'isi_category' , title: 'ISI Category'},
+        { name: '5_year_impact_factor' , title: '5 Year Impact Factor'}
+    ],
+      tableColumnExtensions: [
+        { columnName: 'country', width: 300 },
+        { columnName: 'name_of_journal', width: 300 },
+        { columnName: 'name_of_publishing_company', width: 300, align: 'right' },
+      ],
+      rows: [],
+      sorting: [{ columnName: 'name_of_journal', direction: 'asc' }],
+      totalCount: 0,
+      pageSize: 10,
+      pageSizes: [5, 10, 15],
+      currentPage: 0,
+      loading: true,
+
+      editingRowIds: [],
+      addedRows: [],
+      rowChanges: {},
+      deletingRows: [],
+      /*columnOrder: ['product', 'region', 'amount', 'discount', 'saleDate', 'customer'],*/
+
+
     };
 
-    componentWillMount(){
+    this.changeSorting = this.changeSorting.bind(this);
+    this.changeCurrentPage = this.changeCurrentPage.bind(this);
+    this.changePageSize = this.changePageSize.bind(this);
 
-        const querystring = require('querystring');
-
-        const searchParams = {
-            action: 'the_ajax_hook',
-            name: 'all',
-            filter: 'all'
-        };
-
-        const request = new Request(
-            'http://www.esikolweni.co.za/wp-admin/admin-ajax.php',{
-                method: 'POST',
-                headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-                body: querystring.stringify(searchParams),
-            });
-      
-          return fetch(request)
-          .then(response => response.json())
-          .then(response => {
-              console.log(response);
-              this.setState({rows:response});
-            }
-          ).catch(error => {
-              return error;
-          });
-    }
-
-    onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        this.setState(state => {
-          const rows = state.rows.slice();
-          for (let i = fromRow; i <= toRow; i++) {
-            rows[i] = { ...rows[i], ...updated };
+    const getStateDeletingRows = () => {
+        const { deletingRows } = this.state;
+        return deletingRows;
+      };
+      const getStateRows = () => {
+        const { rows } = this.state;
+        return rows;
+      };
+  
+      this.changeSorting = sorting => this.setState({ sorting });
+      this.changeEditingRowIds = editingRowIds => this.setState({ editingRowIds });
+      this.changeAddedRows = addedRows => this.setState({
+        addedRows: addedRows.map(row => (Object.keys(row).length ? row : {
+            country:'',
+            name_of_journal:'',
+            print_issn:'',
+            e_issn:'',
+            city_of_publication:'',
+            name_of_publishing_company:'',
+            editor:'',
+            editor_email_address:'',
+            language:'',
+            since:'',
+            isi:'',
+            isi_category:'',
+        })),
+      });
+      this.changeRowChanges = rowChanges => this.setState({ rowChanges });
+      this.changeCurrentPage = currentPage => this.setState({ currentPage });
+      this.changePageSize = pageSize => this.setState({ pageSize });
+      this.commitChanges = ({ added, changed, deleted }) => {
+        let { rows } = this.state;
+        if (added) {
+          const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
+          rows = [
+            ...rows,
+            ...added.map((row, index) => ({
+              id: startingAddedId + index,
+              ...row,
+            })),
+          ];
+        }
+        if (changed) {
+          rows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+        }
+        this.setState({ rows, deletingRows: deleted || getStateDeletingRows() });
+      };
+      this.cancelDelete = () => this.setState({ deletingRows: [] });
+      this.deleteRows = () => {
+        const rows = getStateRows().slice();
+        getStateDeletingRows().forEach((rowId) => {
+          const index = rows.findIndex(row => row.id === rowId);
+          if (index > -1) {
+            rows.splice(index, 1);
           }
-          return { rows };
         });
+        this.setState({ rows, deletingRows: [] });
+      };
+      this.changeColumnOrder = (order) => {
+        this.setState({ columnOrder: order });
       };
 
+  }
 
-    render() {
+  componentDidMount() {
+    this.loadData2();
+  }
 
-        return(
-            <div>
-                <ToolkitProvider
-                keyField='id' 
-                data={ this.state.rows } 
-                columns={ columns } 
-                search
-                selectRow={ selectRow }
-                cellEdit={ cellEditFactory({ 
-                    mode: 'dbclick',
-                    beforeSaveCell: (oldValue, newValue, row, column, done) => {
-                        setTimeout(() => {
-                            if (window.confirm('Do you want to accept this change?')) {
-                            done(true);
-                            //perform query
-                            } else {
-                            done(false);
-                            }
-                        }, 0);
-                        return { async: true };
-                        }
-                }) }
-                pagination={ paginationFactory() }
-                >
-                {
-    props => (
-      <div>
-        <SearchBar { ...props.searchProps } />
-        <ClearSearchButton { ...props.searchProps } />
-        <hr />
-                <BootstrapTable 
-                keyField='id' 
-                data={ this.state.rows } 
-                columns={ columns } 
-                search
-                selectRow={ selectRow }
-                cellEdit={ cellEditFactory({ 
-                    mode: 'dbclick',
-                    beforeSaveCell: (oldValue, newValue, row, column, done) => {
-                        setTimeout(() => {
-                            if (window.confirm('Do you want to accept this change?')) {
-                            done(true);
-                            //perform query
-                            } else {
-                            done(false);
-                            }
-                        }, 0);
-                        return { async: true };
-                        }
-                }) }
-                pagination={ paginationFactory() }
-                defaultSorted={ defaultSorted } 
-                    { ...props.baseProps }
-                />
-                </div>
-    )
-}
-                </ToolkitProvider>
-            </div>
-        );
+  componentDidUpdate() {
+    //this.loadData();
+  }
+
+  changeSorting(sorting) {
+    this.setState({
+      loading: true,
+      sorting,
+    });
+  }
+
+  changeCurrentPage(currentPage) {
+    this.setState({
+      loading: true,
+      currentPage,
+    });
+  }
+
+  changePageSize(pageSize) {
+    const { totalCount, currentPage: stateCurrentPage } = this.state;
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const currentPage = Math.min(stateCurrentPage, totalPages - 1);
+
+    this.setState({
+      loading: true,
+      pageSize,
+      currentPage,
+    });
+  }
+
+  queryString() {
+    const { sorting, pageSize, currentPage } = this.state;
+
+    //let queryString = `${URL}?take=${pageSize}&skip=${pageSize * currentPage}`;
+
+    let queryString = 'http://www.esikolweni.co.za/wp-admin/admin-ajax.php'
+
+    const columnSorting = sorting[0];
+    if (columnSorting) {
+      const sortingDirectionString = columnSorting.direction === 'desc' ? ' desc' : '';
+      queryString = `${queryString}&orderby=${columnSorting.columnName}${sortingDirectionString}`;
     }
 
+    return queryString;
+  }
+
+  loadData() {
+    const queryString = this.queryString();
+    if (queryString === this.lastQuery) {
+      this.setState({ loading: false });
+      return;
+    }
+
+    fetch(queryString)
+      .then(response => response.json())
+      .then(data => this.setState({
+        rows: data.items,
+        totalCount: data.totalCount,
+        loading: false,
+      }))
+      .catch(() => this.setState({ loading: false }));
+    this.lastQuery = queryString;
+  }
+
+  loadData2(){
+    const querystring = require('querystring');
+
+    const searchParams = {
+        action: 'the_ajax_hook',
+        name: 'all',
+        filter: 'all'
+    };
+
+    const request = new Request(
+        'http://www.esikolweni.co.za/wp-admin/admin-ajax.php',{
+            method: 'POST',
+            headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+            body: querystring.stringify(searchParams),
+        });
+    
+        return fetch(request)
+        .then(response => response.json())
+        .then(response => {
+            this.setState({rows:response});
+        }
+        ).catch(error => {
+            return error;
+        });
+  }
+
+  render() {
+    const {
+        classes,
+      } = this.props;
+    const {
+      rows,
+      columns,
+      tableColumnExtensions,
+      sorting,
+      pageSize,
+      pageSizes,
+      currentPage,
+      totalCount,
+      loading,
+
+      editingRowIds,
+      addedRows,
+      rowChanges,
+      deletingRows,
+      columnOrder,
+
+
+
+    } = this.state;
+
+    return (
+      <Paper style={{ position: 'relative' }}>
+        <Grid
+          rows={rows}
+          columns={columns}
+          getRowId={getRowId}
+        >
+          <SearchState />
+          <PagingState
+            currentPage={currentPage}
+            onCurrentPageChange={this.changeCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={this.changePageSize}
+          />
+          <EditingState
+            editingRowIds={editingRowIds}
+            onEditingRowIdsChange={this.changeEditingRowIds}
+            rowChanges={rowChanges}
+            onRowChangesChange={this.changeRowChanges}
+            addedRows={addedRows}
+            onAddedRowsChange={this.changeAddedRows}
+            onCommitChanges={this.commitChanges}
+          />
+          <IntegratedFiltering />
+          <Table 
+          columnExtensions={tableColumnExtensions}
+          />
+          <TableHeaderRow />
+          <Toolbar />
+          <SearchPanel />
+          <TableEditRow
+            cellComponent={EditCell}
+          />
+          <TableEditColumn
+            width={170}
+            showAddCommand={!addedRows.length}
+            showEditCommand
+            showDeleteCommand
+            commandComponent={Command}
+          />
+          <PagingPanel
+            pageSizes={pageSizes}
+          />
+        
+        {loading && <Loading />}
+        </Grid>
+
+        <Dialog
+          open={!!deletingRows.length}
+          onClose={this.cancelDelete}
+          classes={{ paper: classes.dialog }}
+        >
+          <DialogTitle>
+            Delete Row
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete the following row?
+            </DialogContentText>
+            <Paper>
+              <Grid
+                rows={rows.filter(row => deletingRows.indexOf(row.id) > -1)}
+                columns={columns}
+              >
+                <Table
+                  columnExtensions={tableColumnExtensions}
+                  cellComponent={Cell}
+                />
+                <TableHeaderRow />
+              </Grid>
+            </Paper>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.cancelDelete} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.deleteRows} color="secondary">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+      </Paper>
+    );
+  }
 }
-export default viewJournals;
+export default withStyles(styles, { name: 'ControlledModeDemo' })(viewJournals);

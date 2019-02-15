@@ -9,7 +9,7 @@ ReactDOM.render(
     <BrowserRouter>
         <App />
     </BrowserRouter>, 
-    document.getElementById('wpbody-content'));
+    document.getElementById('journals'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

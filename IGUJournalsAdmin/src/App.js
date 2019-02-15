@@ -14,20 +14,11 @@ class App extends Component {
       <div className="App">
         <Layout>
           <Header>
-            <Link to="/viewJournals">
-              <button>Home</button>
-            </Link>
-            <Link to="/viewJournals">
-              <button>Search Journals</button>
-            </Link>
-            <Link to="/upload">
-              <button>Upload CSV</button>
-            </Link>
+          <h1>IGU Journals Editor</h1>
           </Header>
           <Content>
               <div>
-                <Route exact path="/viewJournals" component={viewJournals} />
-                <Route exact path="/upload" component={UploadCSV} />
+                <Route exact path="/" component={viewJournals} />
               </div>
           </Content>
         </Layout>

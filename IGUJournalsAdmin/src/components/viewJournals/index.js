@@ -1,14 +1,9 @@
 import React, {Component} from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
-  PagingState,
-  SortingState,
-  CustomPaging,
   SearchState,
   IntegratedFiltering,
-
-  EditingState, SummaryState,
-  IntegratedPaging, IntegratedSorting, IntegratedSummary,
+  EditingState,
 } from '@devexpress/dx-react-grid';
 import {
     Grid,
@@ -16,10 +11,8 @@ import {
     Toolbar,
     SearchPanel,
     TableHeaderRow,
-    PagingPanel,
     TableEditRow, TableEditColumn,
-    DragDropProvider, TableColumnReordering,
-    TableFixedColumns, TableSummaryRow,
+    DragDropProvider, TableColumnReordering, VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -40,11 +33,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { withStyles } from '@material-ui/core/styles';
 
-import { ProgressBarCell } from '../../theme-sources/material-ui/components/progress-bar-cell';
-import { HighlightedCell } from '../../theme-sources/material-ui/components/highlighted-cell';
-import { CurrencyTypeProvider } from '../../theme-sources/material-ui/components/currency-type-provider';
-import { PercentTypeProvider } from '../../theme-sources/material-ui/components/percent-type-provider';
-
 import { Loading } from '../../theme-sources/material-ui/components/loading';
 
 const styles = theme => ({
@@ -61,82 +49,93 @@ const styles = theme => ({
     },
   });
   
-  const AddButton = ({ onExecute }) => (
-    <div style={{ textAlign: 'center' }}>
-      <Button
-        color="primary"
-        onClick={onExecute}
-        title="Create new row"
-      >
-        New
-      </Button>
-    </div>
-  );
-  
-  const EditButton = ({ onExecute }) => (
-    <IconButton onClick={onExecute} title="Edit row">
-      <EditIcon />
-    </IconButton>
-  );
-  
-  const DeleteButton = ({ onExecute }) => (
-    <IconButton onClick={onExecute} title="Delete row">
-      <DeleteIcon />
-    </IconButton>
-  );
-  
-  const CommitButton = ({ onExecute }) => (
-    <IconButton onClick={onExecute} title="Save changes">
-      <SaveIcon />
-    </IconButton>
-  );
-  
-  const CancelButton = ({ onExecute }) => (
-    <IconButton color="secondary" onClick={onExecute} title="Cancel changes">
-      <CancelIcon />
-    </IconButton>
-  );
-
-  const commandComponents = {
-    add: AddButton,
-    edit: EditButton,
-    delete: DeleteButton,
-    commit: CommitButton,
-    cancel: CancelButton,
-  };
-  
-  const Command = ({ id, onExecute }) => {
-    const CommandButton = commandComponents[id];
-    return (
-      <CommandButton
-        onExecute={onExecute}
-      />
-    );
-  };
-
-  const LookupEditCellBase = ({
-    availableColumnValues, value, onValueChange, classes,
-  }) => (
-    <TableCell
-      className={classes.lookupEditCell}
+const AddButton = ({ onExecute }) => (
+  <div style={{ textAlign: 'center' }}>
+    <Button
+      color="primary"
+      onClick={onExecute}
+      title="Create new journal"
     >
-      <Select
-        value={value}
-        onChange={event => onValueChange(event.target.value)}
-        input={(
-          <Input
-            classes={{ root: classes.inputRoot }}
-          />
-  )}
-      >
-        {availableColumnValues.map(item => (
-          <MenuItem key={item} value={item}>
-            {item}
-          </MenuItem>
-        ))}
-      </Select>
-    </TableCell>
+      New
+    </Button>
+  </div>
+);
+
+const BulkUploadButton = ({ onExecute }) => (
+  <div style={{ textAlign: 'center' }}>
+    <Button
+      color="primary"
+      onClick={onExecute}
+      title="Bulk Upload Journals"
+    >
+      Bulk Upload
+    </Button>
+  </div>
+);
+  
+const EditButton = ({ onExecute }) => (
+  <IconButton onClick={onExecute} title="Edit row">
+    <EditIcon />
+  </IconButton>
+);
+
+const DeleteButton = ({ onExecute }) => (
+  <IconButton onClick={onExecute} title="Delete row">
+    <DeleteIcon />
+  </IconButton>
+);
+
+const CommitButton = ({ onExecute }) => (
+  <IconButton onClick={onExecute} title="Save changes">
+    <SaveIcon />
+  </IconButton>
+);
+
+const CancelButton = ({ onExecute }) => (
+  <IconButton color="secondary" onClick={onExecute} title="Cancel changes">
+    <CancelIcon />
+  </IconButton>
+);
+
+const commandComponents = {
+  add: AddButton,
+  upload: BulkUploadButton,
+  edit: EditButton,
+  delete: DeleteButton,
+  commit: CommitButton,
+  cancel: CancelButton,
+};
+
+const Command = ({ id, onExecute }) => {
+  const CommandButton = commandComponents[id];
+  return (
+    <CommandButton
+      onExecute={onExecute}
+    />
   );
+};
+
+const LookupEditCellBase = ({availableColumnValues, value, onValueChange, classes}) => (
+  <TableCell
+    className={classes.lookupEditCell}
+  >
+    <Select
+      value={value}
+      onChange={event => onValueChange(event.target.value)}
+      input={(
+        <Input
+          classes={{ root: classes.inputRoot }}
+        />
+)}
+    >
+      {availableColumnValues.map(item => (
+        <MenuItem key={item} value={item}>
+          {item}
+        </MenuItem>
+      ))}
+    </Select>
+  </TableCell>
+);
 
 export const LookupEditCell = withStyles(styles, { name: 'ControlledModeDemo' })(LookupEditCellBase);
 
@@ -151,6 +150,7 @@ const EditCell = (props) => {
   const getRowId = row => row.id;
 
 class viewJournals extends Component{
+
   constructor(props) {
     super(props);
 
@@ -173,9 +173,9 @@ class viewJournals extends Component{
         { name: '5_year_impact_factor' , title: '5 Year Impact Factor'}
     ],
       tableColumnExtensions: [
-        { columnName: 'country', width: 300 },
-        { columnName: 'name_of_journal', width: 300 },
-        { columnName: 'name_of_publishing_company', width: 300, align: 'right' },
+        /*{ columnName: 'country', width: 100 },
+        { columnName: 'name_of_journal', width: 100 },
+        { columnName: 'name_of_publishing_company', width: 100 },*/
       ],
       rows: [],
       sorting: [{ columnName: 'name_of_journal', direction: 'asc' }],
@@ -189,14 +189,13 @@ class viewJournals extends Component{
       addedRows: [],
       rowChanges: {},
       deletingRows: [],
-      /*columnOrder: ['product', 'region', 'amount', 'discount', 'saleDate', 'customer'],*/
-
-
+      selection: [],
+      
     };
 
+    this.changeSelection = selection => this.setState({ selection });
+
     this.changeSorting = this.changeSorting.bind(this);
-    this.changeCurrentPage = this.changeCurrentPage.bind(this);
-    this.changePageSize = this.changePageSize.bind(this);
 
     const getStateDeletingRows = () => {
         const { deletingRows } = this.state;
@@ -220,16 +219,16 @@ class viewJournals extends Component{
             editor:'',
             editor_email_address:'',
             language:'',
-            since:'',
-            isi:'',
+            since:0,
+            isi:0,
             isi_category:'',
         })),
       });
       this.changeRowChanges = rowChanges => this.setState({ rowChanges });
-      this.changeCurrentPage = currentPage => this.setState({ currentPage });
-      this.changePageSize = pageSize => this.setState({ pageSize });
       this.commitChanges = ({ added, changed, deleted }) => {
+
         let { rows } = this.state;
+
         if (added) {
           const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
           rows = [
@@ -239,12 +238,94 @@ class viewJournals extends Component{
               ...row,
             })),
           ];
+
+          const querystring = require('querystring');
+          
+          const searchParams = {
+            action: 'the_ajax_hook',
+            filter: 'insert',
+            payload: JSON.stringify(added)
+          };
+      
+          const request = new Request(
+            'http://localhost/igu/wp-admin/admin-ajax.php',{
+              method: 'POST',
+              headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+              //headers: {'Accept':'*/*', "Access-Control-Allow-Origin": "*", 'Content-Type': 'application/json;charset=UTF-8'},
+              body: querystring.stringify(searchParams),
+              //body: JSON.stringify(searchParams)
+          });
+      
+          return fetch(request)
+            .then(response => response.json())
+            .then(response => {
+              console.log(response);
+              //this.setState({rows:response, loading: false});
+            }
+            ).catch(error => {
+              return error;
+            });
         }
+
         if (changed) {
+
           rows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+
+          const querystring = require('querystring');
+
+          const searchParams = {
+            action: 'the_ajax_hook',
+            filter: 'update',
+            payload: JSON.stringify(changed)
+          };
+      
+          const request = new Request(
+            'http://localhost/igu/wp-admin/admin-ajax.php',{
+              method: 'POST',
+              headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+              body: querystring.stringify(searchParams),
+          });
+      
+          return fetch(request)
+            .then(response => response.json())
+            .then(response => {
+              this.setState({rows:response, loading: false});
+            }
+            ).catch(error => {
+              return error;
+            });
         }
-        this.setState({ rows, deletingRows: deleted || getStateDeletingRows() });
+
+        if(deleted){
+
+          this.setState({ rows, deletingRows: deleted || getStateDeletingRows() });
+
+          const querystring = require('querystring');
+
+          const searchParams = {
+            action: 'the_ajax_hook',
+            filter: 'delete',
+            payload: JSON.stringify(deleted)
+          };
+      
+          const request = new Request(
+            'http://localhost/igu/wp-admin/admin-ajax.php',{
+              method: 'POST',
+              headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+              body: querystring.stringify(searchParams),
+          });
+      
+          return fetch(request)
+            .then(response => response.json())
+            .then(response => {
+              this.setState({rows:response, loading: false});
+            }
+            ).catch(error => {
+              return error;
+            });
+        }
       };
+
       this.cancelDelete = () => this.setState({ deletingRows: [] });
       this.deleteRows = () => {
         const rows = getStateRows().slice();
@@ -256,18 +337,14 @@ class viewJournals extends Component{
         });
         this.setState({ rows, deletingRows: [] });
       };
+
       this.changeColumnOrder = (order) => {
         this.setState({ columnOrder: order });
       };
-
   }
 
   componentDidMount() {
-    this.loadData2();
-  }
-
-  componentDidUpdate() {
-    //this.loadData();
+    this.loadData();
   }
 
   changeSorting(sorting) {
@@ -277,42 +354,7 @@ class viewJournals extends Component{
     });
   }
 
-  changeCurrentPage(currentPage) {
-    this.setState({
-      loading: true,
-      currentPage,
-    });
-  }
-
-  changePageSize(pageSize) {
-    const { totalCount, currentPage: stateCurrentPage } = this.state;
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const currentPage = Math.min(stateCurrentPage, totalPages - 1);
-
-    this.setState({
-      loading: true,
-      pageSize,
-      currentPage,
-    });
-  }
-
-  queryString() {
-    const { sorting, pageSize, currentPage } = this.state;
-
-    //let queryString = `${URL}?take=${pageSize}&skip=${pageSize * currentPage}`;
-
-    let queryString = 'http://www.esikolweni.co.za/wp-admin/admin-ajax.php'
-
-    const columnSorting = sorting[0];
-    if (columnSorting) {
-      const sortingDirectionString = columnSorting.direction === 'desc' ? ' desc' : '';
-      queryString = `${queryString}&orderby=${columnSorting.columnName}${sortingDirectionString}`;
-    }
-
-    return queryString;
-  }
-
-  loadData() {
+  getData() {
     const queryString = this.queryString();
     if (queryString === this.lastQuery) {
       this.setState({ loading: false });
@@ -330,30 +372,30 @@ class viewJournals extends Component{
     this.lastQuery = queryString;
   }
 
-  loadData2(){
+  loadData(){
+
     const querystring = require('querystring');
 
     const searchParams = {
-        action: 'the_ajax_hook',
-        name: 'all',
-        filter: 'all'
+      action: 'the_ajax_hook',
+      filter: 'get',
+      payload: JSON.stringify([])
     };
 
     const request = new Request(
-        'http://www.esikolweni.co.za/wp-admin/admin-ajax.php',{
-            method: 'POST',
-            headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-            body: querystring.stringify(searchParams),
-        });
-    
-        return fetch(request)
-        .then(response => response.json())
-        .then(response => {
-            this.setState({rows:response});
-        }
-        ).catch(error => {
-            return error;
-        });
+    'http://localhost/igu/wp-admin/admin-ajax.php',{
+      method: 'POST',
+      headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+      body: querystring.stringify(searchParams),
+    });
+
+    return fetch(request)
+      .then(response => response.json())
+      .then(response => {
+        console.log(response);
+        this.setState({rows:response, loading: false});
+        })
+      .catch(() => this.setState({ loading: false }));
   }
 
   render() {
@@ -364,37 +406,26 @@ class viewJournals extends Component{
       rows,
       columns,
       tableColumnExtensions,
-      sorting,
-      pageSize,
-      pageSizes,
-      currentPage,
-      totalCount,
       loading,
-
       editingRowIds,
       addedRows,
       rowChanges,
       deletingRows,
-      columnOrder,
-
-
-
     } = this.state;
 
     return (
       <Paper style={{ position: 'relative' }}>
+
         <Grid
           rows={rows}
           columns={columns}
           getRowId={getRowId}
         >
+
+          <DragDropProvider />
+
           <SearchState />
-          <PagingState
-            currentPage={currentPage}
-            onCurrentPageChange={this.changeCurrentPage}
-            pageSize={pageSize}
-            onPageSizeChange={this.changePageSize}
-          />
+
           <EditingState
             editingRowIds={editingRowIds}
             onEditingRowIdsChange={this.changeEditingRowIds}
@@ -404,25 +435,33 @@ class viewJournals extends Component{
             onAddedRowsChange={this.changeAddedRows}
             onCommitChanges={this.commitChanges}
           />
+
           <IntegratedFiltering />
-          <Table 
-          columnExtensions={tableColumnExtensions}
+
+          <VirtualTable
+            columnExtensions={tableColumnExtensions}
+            cellComponent={Cell}
+            height={800}
           />
+
           <TableHeaderRow />
+
+          <TableColumnReordering defaultOrder={columns.map(column => column.name)} />
+
           <Toolbar />
+
           <SearchPanel />
+
           <TableEditRow
             cellComponent={EditCell}
           />
+
           <TableEditColumn
             width={170}
             showAddCommand={!addedRows.length}
             showEditCommand
             showDeleteCommand
             commandComponent={Command}
-          />
-          <PagingPanel
-            pageSizes={pageSizes}
           />
         
         {loading && <Loading />}

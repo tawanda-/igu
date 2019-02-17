@@ -276,21 +276,27 @@ class viewJournals extends Component{
         filter: 'insert',
         payload: JSON.stringify(added)
       };
+
+      Object.keys(added).map(key => {
+        searchParams['id'] = key;
+        Object.keys(added[key]).map( k => {
+          searchParams[k] = added[key][k];
+        });
+      });
   
       const request = new Request(
         'http://localhost/igu/wp-admin/admin-ajax.php',{
           method: 'POST',
           headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-          //headers: {'Accept':'*/*', "Access-Control-Allow-Origin": "*", 'Content-Type': 'application/json;charset=UTF-8'},
           body: querystring.stringify(searchParams),
-          //body: JSON.stringify(searchParams)
       });
+
+      console.log(querystring.stringify(searchParams));
   
       return fetch(request)
         .then(response => response.json())
         .then(response => {
-          console.log(response);
-          //this.setState({rows:response, loading: false});
+          this.setState({rows:response, loading: false});
         }
         ).catch(error => {
           return error;
@@ -303,26 +309,26 @@ class viewJournals extends Component{
 
       const querystring = require('querystring');
 
-      console.log(changed);
-
       const searchParams = {
         action: 'the_ajax_hook',
-        filter: 'update',
-        payload: JSON.stringify(changed)
-        //payload: changed
+        filter: 'update',      
       };
-  
+
+      Object.keys(changed).map(key => {
+        searchParams['id'] = key;
+        Object.keys(changed[key]).map( k => {
+          searchParams[k] = changed[key][k];
+        });
+      });
+
       const request = new Request(
         'http://localhost/igu/wp-admin/admin-ajax.php',{
           method: 'POST',
           headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-          //headers: {'Accept':'*/*','Content-Type': 'application/json'},
           body: querystring.stringify(searchParams),
-          //body: JSON.stringify(searchParams),
       });
 
-      console.log(searchParams);
-      console.log(querystring.stringify(searchParams));
+      this.setState({loading: true});
   
       return fetch(request)
         .then(response => response.json())
@@ -343,7 +349,7 @@ class viewJournals extends Component{
       const searchParams = {
         action: 'the_ajax_hook',
         filter: 'delete',
-        payload: JSON.stringify(deleted)
+        payload: deleted
       };
   
       const request = new Request(
@@ -352,6 +358,8 @@ class viewJournals extends Component{
           headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
           body: querystring.stringify(searchParams),
       });
+
+      this.setState({loading: true});
   
       return fetch(request)
         .then(response => response.json())

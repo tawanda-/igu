@@ -12,6 +12,7 @@ Version: 2.0
 */
 
 $html_output = "";
+$admin_html_output = "";
 
 /** Check if logged in */
 function check_logged_in()
@@ -54,6 +55,14 @@ add_action('init', 'check_logged_in');
 
 /** Journals Search Front End load CSS and JS */
 
+function frontendSearch(){
+    
+    $GLOBALS['html_output'] = '<div id="journals"></div>';
+
+    add_action( 'wp_enqueue_scripts', 'frontendSearch_css_js' );
+    add_action( 'wp_footer', 'frontendSearch_footer_scripts' );
+}
+
 function frontendSearch_css_js(){
     
     wp_enqueue_style("iguScript-css", plugin_dir_url( __FILE__ )."frontendSearch/vendor/bootstrap/css/bootstrap.min.css");
@@ -81,6 +90,37 @@ function frontendSearch_footer_scripts(){
 
 /** END Journals Search Front End load CSS and JS */
 
+/** Load CSS and JS for Admin Editor**/
+
+function frontendAdmin(){
+    
+    $GLOBALS['html_output'] = '<div id="journals"></div>';
+            
+    add_action( 'wp_enqueue_scripts', 'frontendAdmin_css_js' );
+    add_action( 'wp_footer', 'frontendAdmin_footer_scripts' );
+}
+
+function frontendAdmin_css_js(){
+    
+    wp_enqueue_style("admin-chunk-css", plugin_dir_url( __FILE__ )."frontendAdmin/static/css/main.d9a1dfb6.chunk.css");
+    
+    wp_enqueue_script("admin-chunk-js", plugin_dir_url( __FILE__ ) . "frontendAdmin/adminScript.js", array(), "" );
+    wp_enqueue_script("admin-chunk-js");
+    
+    wp_localize_script( 'admin-chunk-js', 'the_ajax_script', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+}
+
+function frontendAdmin_footer_scripts(){
+
+    wp_enqueue_script("admin-chunk1-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/1.acc757e3.chunk.js", array(), "" );
+    wp_enqueue_script("admin-chunk1-js");
+    
+    wp_enqueue_script("admin-chunk2-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/main.280e1239.chunk.js", array(), "" );
+    wp_enqueue_script("admin-chunk2-js");
+}
+
+/** END Load CSS and JS for Admin Editor**/
+
 /** AJAX Queries */
 add_action('wp_ajax_the_ajax_hook', 'processRequest');
 add_action('wp_ajax_nopriv_the_ajax_hook', 'processRequest');
@@ -97,6 +137,8 @@ add_shortcode('igujournalssearchbar', 'igusearchbar');
 /** Journals Admin Page UI */
 
 function iguadminui(){
+    global $html_output;
+    return $html_output;
 
 }
 add_shortcode('igujournalsadminui', 'iguadminui');
@@ -106,122 +148,122 @@ add_shortcode('igujournalsadminui', 'iguadminui');
 /** Database queries */
 
 function processRequest(){
-
-	if($_POST === " " || $_POST === "" ){
-		echo json_encode (new stdClass);
+    
+    $payload = $_POST;
+    $filter = NULL;
+    $result = NULL;
+    
+    
+    if(isset($payload['action'])){
+        unset($payload['action']);
+    }
+        
+    if(isset($payload['filter'])){
+        $filter = $payload['filter'];
+        unset($payload['filter']);
+    }else{
+        echo json_encode (new stdClass);
 		die();
-	}else if(isset($_POST['name']) && isset($_POST['filter'])){
-		getJournalsRequest($_POST['name'], $_POST['filter']);
-	}else if(isset($_POST['requestType'])){
-		if($_POST['requestType'] === 'delete_journal'){
-			var_dump($_POST['journals']);
-			var_dump(json_decode($_POST['journals']));
-			deleteJournal(json_decode($_POST['journals']));
-		}else if($_POST['requestType'] === 'update_journals'){
-			var_dump($_POST['journals']);
-			var_dump(json_decode($_POST['journals']));
-			updateJournal(json_decode($_POST['journals']));
-		}
-	}
+    }
+
+    switch($filter){
+        case "get":
+            $result = get();
+            break;
+        case "insert":
+            $result = insert($payload);
+            if(false !== $result){
+                $result = get();   
+            }
+            break;
+        case "delete":
+            $result = delete($payload);
+            if(false !== $result){
+                $result = get();   
+            }
+            break;
+        case "update":
+            $result = update($payload);
+            if(false !== $result){
+                $result = get();   
+            }
+            break;
+        case "bulk":
+            break;
+        default:
+            break;
+    }
+    
+    if(!is_null($result)){		
+        echo json_encode($result);
+    }else{
+        echo json_encode (new stdClass);
+    }
 
 	die();
 }
 
-function getJournalsRequest($needle, $filter){
 
-	$needle = sanitize_text_field($_POST['name']);
-	$filter = sanitize_key(sanitize_text_field(strtolower($_POST['filter'])));
-	
-	if($needle === null || $needle == "" || $needle == "   " || $filter === null || $filter == ""){
-		echo json_encode (new stdClass);
-		die();
-	}
-	
-	$categories = array ("name_of_journal", "country", "issn", "editor", "isi_category", "all", "keyword");
-	
-	$columns = array(
-	'country' => 'Country',
-	'name_of_journal' => 'Journal Name',
-	'print_issn' => 'Print ISSN',
-	'e_issn' => 'eISSN',
-	'city_of_publication' => 'City of Publication',
-	'name_of_publishing_company' => 'Publishing Company',
-	'editor' => 'Editor',
-	'editor_email_address' => 'Editor email Addres',
-	'language' => 'Publication language',
-	'since' => 'Since',
-	'isi' => 'ISI',
-	'isi_category' => 'ISI Category',
-	'5_year_impact_factor' => '5 Year Impact Factor'
-	);
-	
-	if( in_array( $filter, $categories ) ){
-		$result = getBy( $filter, $needle );
-		if($result != null ){		
-			echo json_encode($result);
-			
-		}else{
-			echo json_encode (new stdClass);
-			
-		}
-	}else{
-		    echo json_encode (new stdClass);	
-	}
-}
-
-function getBy( $column = null, $needle = null){
-
-	global $wpdb;
-
-	if($column == "name_of_journal")
-		$sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (name_of_journal LIKE %s);",array('%'.like_escape($needle).'%'));
-	if($column == "country")
-		$sql = country($needle);
-	if($column == "keyword")
-		$sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (isi_category LIKE %s);",array('%'.like_escape($needle).'%'));
-	if($column == "editor")
-		$sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (editor LIKE %s);",array('%'.like_escape($needle).'%'));
-	if($column == "issn")
-		$sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (print_issn=%d OR e_issn=%d);",array($needle, $needle));	
-	if($column == "all")
-		$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals ORDER BY name_of_journal";
-
+function get(){
+    
+    global $wpdb;
+    
+    $sql = "SELECT * FROM `wp_igu_journals` ORDER BY `name_of_journal` ASC";
+    
 	return $wpdb->get_results( $sql, OBJECT );
+    
 }
 
-function country($needle){
+function delete($payload) {
+    
+    global $wpdb;
+    
+    return $wpdb->delete( 'wp_igu_journals', array( 'id' => $payload['payload'] ) );;
 
-	global $wpdb;
-	$uk = array('united kingdom', 'unitedkingdom', 'u.k', 'uk', 'england');
-	$usa = array('united states', 'united states of america', 'u.s.a', 'usa', 'america', 'unitedstateofamerica', 'unitedstates');
-	$sa = array('south africa', 's.a', 'sa', 'southafrica');
-
-	if( in_array($needle, $uk) == true)
-		return "SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE country LIKE 'england' OR country LIKE 'united kingdom' OR country LIKE 'wales' OR country LIKE 'scotland'";
-	if( in_array($needle, $usa) == true )
-		return "SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE country LIKE 'united states of america'";
-	if( in_array($needle, $sa) == true )
-		return "SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE country LIKE 'south africa'";
-	else
-		return $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (country LIKE %s);", array('%'.like_escape($needle).'%'));
 }
 
-function deleteJournal($journalsArray){
-	global $wpdb;
-
-	foreach( $journalsArray as $journal){
-		echo $wpdb->delete("wp_igu_journals", array('id' => $journal['id']), array('%d'));
-	}
+function insert($payload){
+    
+    global $wpdb;
+    
+    if(isset($payload['id'])){
+        unset($payload['id']);
+    }
+    
+    if(isset($payload['editor_email_address'])){
+        $payload['editor_info'] = $payload['editor_email_address'];
+        unset($payload['editor_email_address']);
+    }
+    
+    return $wpdb->insert( "wp_igu_journals", $payload);
 }
 
-function updateJournal($journalsArray){
-	global $wpdb;
-
-	foreach( $journalsArray as $journal){
-		echo $wpdb->update( "wp_igu_journals", $journal );
-	}
+function update($payload){
+    
+    global $wpdb;    
+    
+    if(isset($payload['id'])){
+     return $wpdb->update( 'wp_igu_journals', $payload, array('id' => $payload['id']) );   
+    }else{
+        return 0;
+    }
 }
 
 /** END Database queries */
+
+/* Debugging*/
+
+function enableDebugging($debug){
+    if($debug){
+        error_reporting(E_ALL);
+        ini_set('display_errors', True);
+    }
+}
+
+function console_log( $data ){
+  echo '<script>';
+  echo 'console.log('. json_encode( $data ) .')';
+  echo '</script>';
+}
 
 ?>

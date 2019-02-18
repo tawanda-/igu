@@ -273,8 +273,7 @@ class viewJournals extends Component{
       
       const searchParams = {
         action: 'the_ajax_hook',
-        filter: 'insert',
-        payload: JSON.stringify(added)
+        filter: 'insert'
       };
 
       Object.keys(added).map(key => {
@@ -341,34 +340,7 @@ class viewJournals extends Component{
     }
 
     if(deleted){
-
       this.setState({ rows, deletingRows: deleted || getStateDeletingRows() });
-
-      const querystring = require('querystring');
-
-      const searchParams = {
-        action: 'the_ajax_hook',
-        filter: 'delete',
-        payload: deleted
-      };
-  
-      const request = new Request(
-        'http://localhost/igu/wp-admin/admin-ajax.php',{
-          method: 'POST',
-          headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-          body: querystring.stringify(searchParams),
-      });
-
-      this.setState({loading: true});
-  
-      return fetch(request)
-        .then(response => response.json())
-        .then(response => {
-          this.setState({rows:response, loading: false});
-        }
-        ).catch(error => {
-          return error;
-        });
     }
   };
 
@@ -380,6 +352,32 @@ class viewJournals extends Component{
       const index = rows.findIndex(row => row.id === rowId);
       if (index > -1) {
         rows.splice(index, 1);
+        
+        const querystring = require('querystring');
+
+        const searchParams = {
+          action: 'the_ajax_hook',
+          filter: 'delete',
+          payload: rowId
+        };
+
+        const request = new Request(
+        'http://localhost/igu/wp-admin/admin-ajax.php',{
+          method: 'POST',
+          headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+          body: querystring.stringify(searchParams),
+        });
+
+        this.setState({loading: true});
+
+        return fetch(request)
+        .then(response => response.json())
+        .then(response => {
+          this.setState({rows:response, loading: false});
+        })
+        .catch(error => {
+          return error;
+        });
       }
     });
     this.setState({ rows, deletingRows: [] });
@@ -447,8 +445,7 @@ class viewJournals extends Component{
 
     const searchParams = {
       action: 'the_ajax_hook',
-      filter: 'get',
-      payload: JSON.stringify([])
+      filter: 'get'
     };
 
     const request = new Request(

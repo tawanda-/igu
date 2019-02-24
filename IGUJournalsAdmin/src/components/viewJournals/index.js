@@ -31,12 +31,11 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
-import UpdateIcon from '@material-ui/icons/Update';
 import { withStyles } from '@material-ui/core/styles';
 
 import { Loading } from '../../theme-sources/material-ui/components/loading';
 
-import { Modal, Upload, Icon } from 'antd';
+import { Upload, Icon } from 'antd';
 
 const Dragger = Upload.Dragger;
 
@@ -44,7 +43,7 @@ const bulkUploadProps = {
   name: 'file',
   multiple: false,
     //action: 'https://igu-online.org/wp-admin/admin-ajax.php',
-    action: 'http://www.esikolweni.co.za/wp-admin/admin-ajax.php',
+    action: 'http://localhost/igu/wp-admin/admin-ajax.php',
   onChange(info) {
     const status = info.file.status;
     if (status !== 'uploading') {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
-import { PROD_BASE_URL, WP_ACTION } from './api/settings';
+import { PROD_BASE_URL, DEV_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
 import Loader from 'react-loader-spinner';
@@ -19,17 +19,15 @@ class App extends Component {
   }
 
   initialDataLoad = () => {
-    var name = "all";
-    var filter = "all";
+    var filter = "get";
     const querystring = require('querystring');
     const searchParams = {
         action: WP_ACTION,
-        name: name,
         filter: filter
     };
 
    var self = this;
-    const request = new Request(PROD_BASE_URL,{
+    const request = new Request(DEV_BASE_URL,{
       method: 'POST',
       headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
       body: querystring.stringify(searchParams),

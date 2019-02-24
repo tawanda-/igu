@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import {Route, Link} from 'react-router-dom';
+import {Route} from 'react-router-dom';
 import './App.css';
 
 import { Layout } from 'antd';
-import UploadCSV from './components/uploadCSVJournals';
 import viewJournals from './components/viewJournals';
 
 const { Header, Content } = Layout;

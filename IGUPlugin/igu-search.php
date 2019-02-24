@@ -14,6 +14,11 @@ Version: 2.0
 $html_output = "";
 $admin_html_output = "";
 
+//Search frontend files from react
+$search_chunk_css = "frontendSearch/static/css/1.54be5b4f.chunk.css";
+$search_chunk1_js = "frontendSearch/static/js/1.f2fb7eb2.chunk.js";
+$search_chunk2_js = "frontendSearch/static/js/main.280e1239.chunk.js";
+
 /** Check if logged in */
 function check_logged_in()
 {
@@ -42,7 +47,9 @@ function check_logged_in()
 					</a>
 				</button>
 			</div>
-			<div id="journals"></div>';
+            <div id="journals"></div>';
+            add_action( 'wp_enqueue_scripts', 'frontendSearch_css_js' );
+		    add_action( 'wp_footer', 'frontendSearch_footer_scripts' );
     }else{
 
 		$GLOBALS['html_output'] = '<div id="journals"></div>';
@@ -71,7 +78,7 @@ function frontendSearch_css_js(){
     
     wp_enqueue_style("igu-style-css", plugin_dir_url( __FILE__ )."frontendSearch/css/style.css");
     
-    wp_enqueue_style("chunk-css", plugin_dir_url( __FILE__ )."frontendSearch/static/css/1.54be5b4f.chunk.css");
+    wp_enqueue_style("search-chunk-css", plugin_dir_url( __FILE__ ).$GLOBALS['search_chunk_css']);
     
     wp_enqueue_script("iguScript-js", plugin_dir_url( __FILE__ ) . "frontendSearch/js/iguScript.js", array(), "" );
     wp_enqueue_script("iguScript-js");
@@ -81,11 +88,11 @@ function frontendSearch_css_js(){
 
 function frontendSearch_footer_scripts(){
     
-    wp_enqueue_script("chunk1-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/1.f2fb7eb2.chunk.js", array(), "" );
-    wp_enqueue_script("chunk1-js");
+    wp_enqueue_script("search-chunk1-js", plugin_dir_url( __FILE__ ) .$GLOBALS['search_chunk1_js'] , array(), "" );
+    wp_enqueue_script("search-chunk1-js");
 
-    wp_enqueue_script("chunk2-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/main.949fa29a.chunk.js", array(), "" );
-    wp_enqueue_script("chunk2-js");
+    wp_enqueue_script("search-chunk2-js", plugin_dir_url( __FILE__ ) .$GLOBALS['search_chunk2_js'], array(), "" );
+    wp_enqueue_script("search-chunk2-js");
 }
 
 /** END Journals Search Front End load CSS and JS */
@@ -115,7 +122,7 @@ function frontendAdmin_footer_scripts(){
     wp_enqueue_script("admin-chunk1-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/1.acc757e3.chunk.js", array(), "" );
     wp_enqueue_script("admin-chunk1-js");
     
-    wp_enqueue_script("admin-chunk2-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/main.280e1239.chunk.js", array(), "" );
+    wp_enqueue_script("admin-chunk2-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/main.280e1239.chunk.js" , array(), "" );
     wp_enqueue_script("admin-chunk2-js");
 }
 

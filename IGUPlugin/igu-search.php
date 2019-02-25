@@ -4,9 +4,9 @@
  * @version 1.0
  */
 /*
-Plugin Name: IGU Search
+Plugin Name: IGU Journals
 Plugin URI:
-Description: Search IGU Database
+Description: IGU Journals
 Author: Tawanda Muhwati, Ngoni Munyaradzi
 Version: 2.0
 */
@@ -15,41 +15,55 @@ $html_output = "";
 $admin_html_output = "";
 
 //Search frontend files from react
-$search_chunk_css = "frontendSearch/static/css/1.54be5b4f.chunk.css";
-$search_chunk1_js = "frontendSearch/static/js/1.f2fb7eb2.chunk.js";
-$search_chunk2_js = "frontendSearch/static/js/main.280e1239.chunk.js";
+$search_chunk_css = "frontendSearch/static/css/1.761e4ef6.chunk.css";
+$search_chunk1_js = "frontendSearch/static/js/1.4b6b55fa.chunk.js";
+$search_chunk2_js = "frontendSearch/static/js/main.32f6a8b5.chunk.js";
+
+$admin_chunk_css = "frontendAdmin/static/css/main.66efe978.chunk.css";
+$admin_chunk1_js = "frontendAdmin/static/js/1.2c13f44b.chunk.js";
+$admin_chunk2_js = "frontendAdmin/static/js/main.63341481.chunk.js";
 
 /** Check if logged in */
 function check_logged_in()
 {
     if ( is_user_logged_in() ) 
     {
+        if(is_page('journals-admin')){
 
-		$GLOBALS['html_output'] = '
-			<div style="
-				padding-left: 15px;
-				margin-bottom: 10px;
-			">
-				<button
-					style="
-						border-radius: 4px;
-						color: #fff;
-						background-color: #124a7d;
-						border-color: #124a7d;
-						margin-bottom
-					"
-					class="btn"
-				>
-					<a 
-						style="color:#fff"
-						href="journals-admin">
-						Edit Journals
-					</a>
-				</button>
-			</div>
-            <div id="journals"></div>';
-            add_action( 'wp_enqueue_scripts', 'frontendSearch_css_js' );
-		    add_action( 'wp_footer', 'frontendSearch_footer_scripts' );
+            $GLOBALS['html_output'] = '<div id="journals"></div>';
+
+            add_action( 'wp_enqueue_scripts', 'frontendAdmin_css_js' );
+            add_action( 'wp_footer', 'frontendAdmin_footer_scripts' );
+        
+        }else if(is_page(16)){
+            
+            $GLOBALS['html_output'] = '
+                <div style="
+                    padding-left: 15px;
+                    margin-bottom: 10px;
+                ">
+                    <button
+                        style="
+                            border-radius: 4px;
+                            color: #fff;
+                            background-color: #124a7d;
+                            border-color: #124a7d;
+                            margin-bottom
+                        "
+                        class="btn"
+                    >
+                        <a 
+                            style="color:#fff"
+                            href="journals-admin">
+                            Edit Journals
+                        </a>
+                    </button>
+                </div>
+                <div id="journals"></div>';
+                add_action( 'wp_enqueue_scripts', 'frontendSearch_css_js' );
+                add_action( 'wp_footer', 'frontendSearch_footer_scripts' );
+        }
+        
     }else{
 
 		$GLOBALS['html_output'] = '<div id="journals"></div>';
@@ -58,7 +72,9 @@ function check_logged_in()
 		add_action( 'wp_footer', 'frontendSearch_footer_scripts' );
 	}
 }
-add_action('init', 'check_logged_in');
+//add_action('init', 'check_logged_in');
+
+add_action( 'template_redirect', 'check_logged_in' );
 
 /** Journals Search Front End load CSS and JS */
 
@@ -109,9 +125,13 @@ function frontendAdmin(){
 
 function frontendAdmin_css_js(){
     
-    wp_enqueue_style("admin-chunk-css", plugin_dir_url( __FILE__ )."frontendAdmin/static/css/main.d9a1dfb6.chunk.css");
+    wp_enqueue_style("admin-google-css", "https://fonts.googleapis.com/css?family=Roboto:300,400,500");
     
-    wp_enqueue_script("admin-chunk-js", plugin_dir_url( __FILE__ ) . "frontendAdmin/adminScript.js", array(), "" );
+    wp_enqueue_style("admin-material-css", "https://fonts.googleapis.com/icon?family=Material+Icons");
+    
+    wp_enqueue_style("admin-chunk-css", plugin_dir_url( __FILE__ ).$GLOBALS['admin_chunk_css']);
+    
+    wp_enqueue_script("admin-chunk-js", plugin_dir_url( __FILE__ ) . "frontendSearch/js/iguScript.js", array(), "" );
     wp_enqueue_script("admin-chunk-js");
     
     wp_localize_script( 'admin-chunk-js', 'the_ajax_script', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
@@ -119,10 +139,10 @@ function frontendAdmin_css_js(){
 
 function frontendAdmin_footer_scripts(){
 
-    wp_enqueue_script("admin-chunk1-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/1.acc757e3.chunk.js", array(), "" );
+    wp_enqueue_script("admin-chunk1-js", plugin_dir_url( __FILE__ ) . $GLOBALS['admin_chunk1_js'], array(), "" );
     wp_enqueue_script("admin-chunk1-js");
     
-    wp_enqueue_script("admin-chunk2-js", plugin_dir_url( __FILE__ ) . "frontendSearch/static/js/main.280e1239.chunk.js" , array(), "" );
+    wp_enqueue_script("admin-chunk2-js", plugin_dir_url( __FILE__ ) . $GLOBALS['admin_chunk2_js'] , array(), "" );
     wp_enqueue_script("admin-chunk2-js");
 }
 

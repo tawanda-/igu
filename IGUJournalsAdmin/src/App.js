@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import {Route} from 'react-router-dom';
 import './App.css';
 
 import { Layout } from 'antd';
-import viewJournals from './components/viewJournals';
+import ViewJournals from './components/viewJournals';
 
 const { Header, Content } = Layout;
 
@@ -16,9 +15,7 @@ class App extends Component {
           <h1>IGU Journals Editor</h1>
           </Header>
           <Content>
-              <div>
-                <Route exact path="/" component={viewJournals} />
-              </div>
+              <ViewJournals {...this.props} />
           </Content>
         </Layout>
       </div>

@@ -37,13 +37,16 @@ import { Loading } from '../../theme-sources/material-ui/components/loading';
 
 import { Upload, Icon } from 'antd';
 
+import { PROD_BASE_URL, DEV_BASE_URL, LOCAL_BASE_URL, WP_ACTION } from './settings';
+
+const REQ_URL = DEV_BASE_URL;
+
 const Dragger = Upload.Dragger;
 
 const bulkUploadProps = {
   name: 'file',
   multiple: false,
-    //action: 'https://igu-online.org/wp-admin/admin-ajax.php',
-    action: 'http://localhost/igu/wp-admin/admin-ajax.php',
+    action: DEV_BASE_URL,
   onChange(info) {
     const status = info.file.status;
     if (status !== 'uploading') {
@@ -283,13 +286,12 @@ class viewJournals extends Component{
       });
   
       const request = new Request(
-        'http://localhost/igu/wp-admin/admin-ajax.php',{
+        REQ_URL,{
           method: 'POST',
           headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
           body: querystring.stringify(searchParams),
-      });
-
-      console.log(querystring.stringify(searchParams));
+        }
+      );
   
       return fetch(request)
         .then(response => response.json())
@@ -320,11 +322,12 @@ class viewJournals extends Component{
       });
 
       const request = new Request(
-        'http://localhost/igu/wp-admin/admin-ajax.php',{
+        REQ_URL,{
           method: 'POST',
           headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
           body: querystring.stringify(searchParams),
-      });
+        }
+      );
 
       this.setState({loading: true});
   
@@ -361,11 +364,12 @@ class viewJournals extends Component{
         };
 
         const request = new Request(
-        'http://localhost/igu/wp-admin/admin-ajax.php',{
-          method: 'POST',
-          headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-          body: querystring.stringify(searchParams),
-        });
+          REQ_URL,{
+            method: 'POST',
+            headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+            body: querystring.stringify(searchParams),
+          }
+        );
 
         this.setState({loading: true});
 
@@ -448,11 +452,12 @@ class viewJournals extends Component{
     };
 
     const request = new Request(
-    'http://localhost/igu/wp-admin/admin-ajax.php',{
-      method: 'POST',
-      headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
-      body: querystring.stringify(searchParams),
-    });
+      REQ_URL,{
+        method: 'POST',
+        headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: querystring.stringify(searchParams),
+      }
+    );
 
     return fetch(request)
       .then(response => response.json())

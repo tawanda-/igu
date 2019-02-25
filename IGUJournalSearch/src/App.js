@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Search from './components/Search/Search';
-import { PROD_BASE_URL, DEV_BASE_URL, WP_ACTION } from './api/settings';
+import { PROD_BASE_URL, DEV_BASE_URL, LOCAL_BASE_URL, WP_ACTION } from './api/settings';
 import * as actionCreators from './store/actions';
 import Results from './components/Results/Results';
 import Loader from 'react-loader-spinner';

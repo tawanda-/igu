@@ -359,8 +359,8 @@ function replaceFromExcel($payload){
                     array( 
                         '%s',
                         '%s', 
-                        '%d',
-                        '%d',
+                        '%s',
+                        '%s',
                         '%s', 
                         '%s', 
                         '%s', 

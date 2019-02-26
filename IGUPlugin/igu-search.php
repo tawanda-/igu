@@ -338,6 +338,14 @@ function replaceFromExcel($payload){
                         ) 
                     );  
                 }else{
+/*
+                    $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (country=%s AND name_of_journal=%s);",array($sheet->getName(), $row[0]));	
+
+                    if($wpdb->get_row( $sql )){
+
+                    }
+                    */
+
                  $wpdb->replace( 
                     'wp_igu_journals', 
                     array( 

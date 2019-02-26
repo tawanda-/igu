@@ -39,7 +39,7 @@ import { Upload, Icon, message } from 'antd';
 
 import { PROD_BASE_URL, DEV_BASE_URL, LOCAL_BASE_URL, WP_ACTION } from './settings';
 
-const REQ_URL = LOCAL_BASE_URL;
+const REQ_URL = DEV_BASE_URL;
 
 const Dragger = Upload.Dragger;
 

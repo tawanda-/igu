@@ -35,28 +35,32 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { Loading } from '../../theme-sources/material-ui/components/loading';
 
-import { Upload, Icon } from 'antd';
+import { Upload, Icon, message } from 'antd';
 
 import { PROD_BASE_URL, DEV_BASE_URL, LOCAL_BASE_URL, WP_ACTION } from './settings';
 
-const REQ_URL = DEV_BASE_URL;
+const REQ_URL = LOCAL_BASE_URL;
 
 const Dragger = Upload.Dragger;
 
 const bulkUploadProps = {
   name: 'file',
   multiple: false,
-    action: DEV_BASE_URL,
+  action: REQ_URL,
+  data: {
+    action: 'the_ajax_hook',
+    filter: 'bulk'
+  },
   onChange(info) {
     const status = info.file.status;
     if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
+      this.setState({loading:true});
     }
-    /*if (status === 'done') {
+    if (status === 'done') {
       message.success(`${info.file.name} file uploaded successfully.`);
     } else if (status === 'error') {
       message.error(`${info.file.name} file upload failed.`);
-    }*/
+    }
   },
 };
 

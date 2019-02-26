@@ -4,12 +4,16 @@
  * @version 1.0
  */
 /*
-Plugin Name: IGU Journals
+Plugin Name: IGU Search
 Plugin URI:
-Description: IGU Journals
+Description: Search IGU Database
 Author: Tawanda Muhwati, Ngoni Munyaradzi
 Version: 2.0
 */
+require_once 'frontendAdmin/spout/src/Spout/Autoloader/autoload.php';
+
+use Box\Spout\Reader\ReaderFactory;
+use Box\Spout\Common\Type;
 
 $html_output = "";
 $admin_html_output = "";
@@ -17,11 +21,11 @@ $admin_html_output = "";
 //Search frontend files from react
 $search_chunk_css = "frontendSearch/static/css/1.761e4ef6.chunk.css";
 $search_chunk1_js = "frontendSearch/static/js/1.4b6b55fa.chunk.js";
-$search_chunk2_js = "frontendSearch/static/js/main.32f6a8b5.chunk.js";
+$search_chunk2_js = "frontendSearch/static/js/main.1d11403e.chunk.js";
 
 $admin_chunk_css = "frontendAdmin/static/css/main.66efe978.chunk.css";
-$admin_chunk1_js = "frontendAdmin/static/js/1.2c13f44b.chunk.js";
-$admin_chunk2_js = "frontendAdmin/static/js/main.63341481.chunk.js";
+$admin_chunk1_js = "frontendAdmin/static/js/1.704b1e83.chunk.js";
+$admin_chunk2_js = "frontendAdmin/static/js/main.64c8bf69.chunk.js";
 
 /** Check if logged in */
 function check_logged_in()
@@ -216,8 +220,13 @@ function processRequest(){
             }
             break;
         case "bulk":
+            $result = replaceFromExcel($_FILES["file"]["tmp_name"]);
+            if(false !== $result){
+                $result = get();   
+            }
             break;
         default:
+            var_dump($_POST);
             break;
     }
     
@@ -276,6 +285,102 @@ function update($payload){
     }
 }
 
+// improve if else statement
+// check using name and country to see if jounral exists before insert
+
+function replaceFromExcel($payload){
+    
+    global $wpdb;
+    
+    $reader = ReaderFactory::create(Type::XLSX);
+
+    $reader->open($payload);
+
+    foreach ($reader->getSheetIterator() as $sheet) {
+        foreach ($sheet->getRowIterator() as $rowNumber => $row) {
+            if($rowNumber > 1 && $sheet->getName() != '' && $row[1] != ''){
+                if(row[0] != ''){
+                    $wpdb->replace( 
+                        'wp_igu_journals', 
+                        array( 
+                            'id' => $row[0],
+                            'country' => $sheet->getName(),
+                            'name_of_journal' => $row[1],
+                            'print_issn' => $row[2],
+                            'e_issn' => $row[3],
+                            'city_of_publication' => $row[4],
+                            'name_of_publishing_company' => $row[5],
+                            'editor' => $row[6],
+                            'editor_info' => $row[7],
+                            'language' => $row[8],
+                            'since' => $row[9],
+                            'isi' => $row[10],
+                            'isi_category' => $row[11],
+                            '5_year_impact_factor' => $row[12],
+                            'website' => $row[13]
+                        ), 
+                        array( 
+                            '%d',
+                            '%s',
+                            '%s', 
+                            '%d',
+                            '%d',
+                            '%s', 
+                            '%s', 
+                            '%s', 
+                            '%s', 
+                            '%s', 
+                            '%d',
+                            '%d',
+                            '%s', 
+                            '%f', 
+                            '%s', 
+                        ) 
+                    );  
+                }else{
+                 $wpdb->replace( 
+                    'wp_igu_journals', 
+                    array( 
+                        'country' => $sheet->getName(),
+                        'name_of_journal' => $row[0],
+                        'print_issn' => $row[1],
+                        'e_issn' => $row[2],
+                        'city_of_publication' => $row[3],
+                        'name_of_publishing_company' => $row[4],
+                        'editor' => $row[5],
+                        'editor_info' => $row[6],
+                        'language' => $row[7],
+                        'since' => $row[8],
+                        'isi' => $row[9],
+                        'isi_category' => $row[10],
+                        '5_year_impact_factor' => $row[11],
+                        'website' => $row[12]
+                    ), 
+                    array( 
+                        '%s',
+                        '%s', 
+                        '%d',
+                        '%d',
+                        '%s', 
+                        '%s', 
+                        '%s', 
+                        '%s', 
+                        '%s', 
+                        '%d',
+                        '%d',
+                        '%s', 
+                        '%f', 
+                        '%s', 
+                    ) 
+                );   
+                }
+            }
+        }
+    }
+    $reader->close();
+    return true;
+}
+
 /** END Database queries */
 
 /* Debugging*/
@@ -292,5 +397,6 @@ function console_log( $data ){
   echo 'console.log('. json_encode( $data ) .')';
   echo '</script>';
 }
+
 
 ?>

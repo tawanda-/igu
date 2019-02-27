@@ -186,7 +186,7 @@ class viewJournals extends Component{
     this.state = {
 
       columns : [
-          { name: 'id' , title: 'id'},
+          { name: 'id' , title: 'id', allowEditing: false},
           { name: 'country' , title: 'Country'},
           { name: 'name_of_journal' , title: 'Journal Name'},
           { name: 'print_issn' , title: 'Print ISSN'},

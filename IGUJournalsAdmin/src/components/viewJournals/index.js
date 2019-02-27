@@ -595,10 +595,7 @@ class viewJournals extends Component{
           </DialogContent>
           <DialogActions>
             <Button onClick={this.uploadModalHandleCancel} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.uploadModalHandleOk} color="secondary">
-              Upload
+              Done
             </Button>
           </DialogActions>
         </Dialog>

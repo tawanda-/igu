@@ -47,15 +47,13 @@ const bulkUploadProps = {
   name: 'file',
   multiple: false,
   action: REQ_URL,
+  headers: {'Accept':'*/*'},
   data: {
     action: 'the_ajax_hook',
     filter: 'bulk'
   },
-  onChange(info) {
+  onChange(info) { 
     const status = info.file.status;
-    if (status !== 'uploading') {
-      this.setState({loading:true});
-    }
     if (status === 'done') {
       message.success(`${info.file.name} file uploaded successfully.`);
     } else if (status === 'error') {
@@ -128,7 +126,6 @@ const CancelButton = ({ onExecute }) => (
 
 const commandComponents = {
   add: AddButton,
-  upload: BulkUploadButton,
   edit: EditButton,
   delete: DeleteButton,
   commit: CommitButton,
@@ -395,26 +392,22 @@ class viewJournals extends Component{
   };
 
   this.onClickUploadButton = () => {
-    console.log("on click");
     this.setState({
       showUploadModal: true,
     });
   }
 
   this.uploadModalHandleOk = (e) => {
-    console.log(e);
     this.setState({
       visible: false,
     });
   }
 
   this.uploadModalHandleCancel = (e) => {
-    console.log(e);
     this.setState({
       showUploadModal: false,
     });
   }
-
 }
 
   componentDidMount() {

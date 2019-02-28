@@ -23,9 +23,9 @@ $search_chunk_css = "frontendSearch/static/css/1.761e4ef6.chunk.css";
 $search_chunk1_js = "frontendSearch/static/js/1.4b6b55fa.chunk.js";
 $search_chunk2_js = "frontendSearch/static/js/main.1d11403e.chunk.js";
 
-$admin_chunk_css = "frontendAdmin/static/css/main.66efe978.chunk.css";
-$admin_chunk1_js = "frontendAdmin/static/js/1.704b1e83.chunk.js";
-$admin_chunk2_js = "frontendAdmin/static/js/main.64c8bf69.chunk.js";
+$admin_chunk_css = "frontendAdmin/static/css/main.b06eaf9f.chunk.css";
+$admin_chunk1_js = "frontendAdmin/static/js/1.c14266c8.chunk.js";
+$admin_chunk2_js = "frontendAdmin/static/js/main.8d446f83.chunk.js";
 
 /** Check if logged in */
 function check_logged_in()
@@ -39,7 +39,7 @@ function check_logged_in()
             add_action( 'wp_enqueue_scripts', 'frontendAdmin_css_js' );
             add_action( 'wp_footer', 'frontendAdmin_footer_scripts' );
         
-        }else if(is_page(16)){
+        }else if(is_page('journals')){
             
             $GLOBALS['html_output'] = '
                 <div style="
@@ -224,9 +224,10 @@ function processRequest(){
             if(false !== $result){
                 $result = get();   
             }
+            $result = true;
             break;
         default:
-            var_dump($_POST);
+            $result = 'true';
             break;
     }
     

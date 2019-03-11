@@ -1,14 +1,14 @@
 <?php
 /**
- * @package igu-search
- * @version 1.0
+ * @package igu-journals
+ * @version 3.0
  */
 /*
-Plugin Name: IGU Search
+Plugin Name: IGU Journals
 Plugin URI:
-Description: Search IGU Database
+Description: IGU Jornals Plugin
 Author: Tawanda Muhwati, Ngoni Munyaradzi
-Version: 2.0
+Version: 3.0
 */
 require_once 'frontendAdmin/spout/src/Spout/Autoloader/autoload.php';
 
@@ -21,11 +21,11 @@ $admin_html_output = "";
 //Search frontend files from react
 $search_chunk_css = "frontendSearch/static/css/1.761e4ef6.chunk.css";
 $search_chunk1_js = "frontendSearch/static/js/1.4b6b55fa.chunk.js";
-$search_chunk2_js = "frontendSearch/static/js/main.1d11403e.chunk.js";
+$search_chunk2_js = "frontendSearch/static/js/main.4548aaba.chunk.js";
 
-$admin_chunk_css = "frontendAdmin/static/css/main.b06eaf9f.chunk.css";
-$admin_chunk1_js = "frontendAdmin/static/js/1.c14266c8.chunk.js";
-$admin_chunk2_js = "frontendAdmin/static/js/main.8d446f83.chunk.js";
+$admin_chunk_css = "frontendAdmin/static/css/main.66efe978.chunk.css";
+$admin_chunk1_js = "frontendAdmin/static/js/1.4c882480.chunk.js";
+$admin_chunk2_js = "frontendAdmin/static/js/main.4e630bbf.chunk.js";
 
 /** Check if logged in */
 function check_logged_in()
@@ -135,7 +135,7 @@ function frontendAdmin_css_js(){
     
     wp_enqueue_style("admin-chunk-css", plugin_dir_url( __FILE__ ).$GLOBALS['admin_chunk_css']);
     
-    wp_enqueue_script("admin-chunk-js", plugin_dir_url( __FILE__ ) . "frontendSearch/js/iguScript.js", array(), "" );
+    wp_enqueue_script("admin-chunk-js", plugin_dir_url( __FILE__ ) . "frontendAdmin/adminScript.js", array(), "" );
     wp_enqueue_script("admin-chunk-js");
     
     wp_localize_script( 'admin-chunk-js', 'the_ajax_script', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
@@ -292,63 +292,28 @@ function update($payload){
 function replaceFromExcel($payload){
     
     global $wpdb;
+    $wpdb->show_errors();
     
     $reader = ReaderFactory::create(Type::XLSX);
 
     $reader->open($payload);
+    
+    $result = false;
 
     foreach ($reader->getSheetIterator() as $sheet) {
         foreach ($sheet->getRowIterator() as $rowNumber => $row) {
-            if($rowNumber > 1 && $sheet->getName() != '' && $row[1] != ''){
-                if(row[0] != ''){
-                    $wpdb->replace( 
-                        'wp_igu_journals', 
-                        array( 
-                            'id' => $row[0],
-                            'country' => $sheet->getName(),
-                            'name_of_journal' => $row[1],
-                            'print_issn' => $row[2],
-                            'e_issn' => $row[3],
-                            'city_of_publication' => $row[4],
-                            'name_of_publishing_company' => $row[5],
-                            'editor' => $row[6],
-                            'editor_info' => $row[7],
-                            'language' => $row[8],
-                            'since' => $row[9],
-                            'isi' => $row[10],
-                            'isi_category' => $row[11],
-                            '5_year_impact_factor' => $row[12],
-                            'website' => $row[13]
-                        ), 
-                        array( 
-                            '%d',
-                            '%s',
-                            '%s', 
-                            '%d',
-                            '%d',
-                            '%s', 
-                            '%s', 
-                            '%s', 
-                            '%s', 
-                            '%s', 
-                            '%d',
-                            '%d',
-                            '%s', 
-                            '%f', 
-                            '%s', 
-                        ) 
-                    );  
-                }else{
-/*
-                    $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM wp_igu_journals WHERE (country=%s AND name_of_journal=%s);",array($sheet->getName(), $row[0]));	
-
-                    if($wpdb->get_row( $sql )){
-
-                    }
-                    */
-
-                 $wpdb->replace( 
-                    'wp_igu_journals', 
+            if($rowNumber > 2 && $sheet->getName() != '' && $row[0] != ''){
+                
+                $isi = 0;
+                
+                if( strcasecmp($row[9], 'yes') == 0){
+                    $isi = 1;
+                }else {
+                    $isi = 0;
+                }
+                
+                $result = $wpdb->insert( 
+                    "wp_igu_journals",
                     array( 
                         'country' => $sheet->getName(),
                         'name_of_journal' => $row[0],
@@ -360,34 +325,19 @@ function replaceFromExcel($payload){
                         'editor_info' => $row[6],
                         'language' => $row[7],
                         'since' => $row[8],
-                        'isi' => $row[9],
+                        'isi' => $isi,
                         'isi_category' => $row[10],
                         '5_year_impact_factor' => $row[11],
                         'website' => $row[12]
-                    ), 
-                    array( 
-                        '%s',
-                        '%s', 
-                        '%s',
-                        '%s',
-                        '%s', 
-                        '%s', 
-                        '%s', 
-                        '%s', 
-                        '%s', 
-                        '%d',
-                        '%d',
-                        '%s', 
-                        '%f', 
-                        '%s', 
-                    ) 
-                );   
-                }
+                    )
+                );
+            }else if($rowNumber > 2 && $row[0] == ''){
+                continue;
             }
         }
     }
     $reader->close();
-    return true;
+    return $result;
 }
 
 /** END Database queries */
@@ -406,6 +356,5 @@ function console_log( $data ){
   echo 'console.log('. json_encode( $data ) .')';
   echo '</script>';
 }
-
 
 ?>

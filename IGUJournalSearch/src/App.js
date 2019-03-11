@@ -27,7 +27,7 @@ class App extends Component {
     };
 
    var self = this;
-    const request = new Request(DEV_BASE_URL,{
+    const request = new Request(PROD_BASE_URL,{
       method: 'POST',
       headers: {'Accept':'*/*', 'Content-Type': 'application/x-www-form-urlencoded'},
       body: querystring.stringify(searchParams),

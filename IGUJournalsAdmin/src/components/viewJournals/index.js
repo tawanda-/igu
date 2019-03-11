@@ -39,28 +39,9 @@ import { Upload, Icon, message } from 'antd';
 
 import { PROD_BASE_URL, DEV_BASE_URL, LOCAL_BASE_URL, WP_ACTION } from './settings';
 
-const REQ_URL = DEV_BASE_URL;
+const REQ_URL = PROD_BASE_URL;
 
 const Dragger = Upload.Dragger;
-
-const bulkUploadProps = {
-  name: 'file',
-  multiple: false,
-  action: REQ_URL,
-  headers: {'Accept':'*/*'},
-  data: {
-    action: 'the_ajax_hook',
-    filter: 'bulk'
-  },
-  onChange(info) { 
-    const status = info.file.status;
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
 
 const styles = theme => ({
     lookupEditCell: {
@@ -84,18 +65,6 @@ const AddButton = ({ onExecute }) => (
       title="Create new journal"
     >
       New
-    </Button>
-  </div>
-);
-
-const BulkUploadButton = ({ onExecute }) => (
-  <div style={{ textAlign: 'center' }}>
-    <Button
-      color="primary"
-      onClick={onExecute}
-      title="Bulk Upload Journals"
-    >
-      Bulk Upload
     </Button>
   </div>
 );
@@ -463,6 +432,26 @@ class viewJournals extends Component{
       })
       .catch(() => this.setState({ loading: false }));
   }
+
+  handleChange = (info) => {
+
+    console.log("pano");
+    console.log(info);
+    const status = info.file.status;
+    if (status === 'done') {
+
+      this.setState({
+        showUploadModal: false,
+      });
+
+    } else if (status === 'error') {
+
+      this.setState({
+        showUploadModal: false,
+      });
+      
+    }
+  }
   
   render() {
     const {
@@ -478,6 +467,34 @@ class viewJournals extends Component{
       rowChanges,
       deletingRows,
     } = this.state;
+
+    const bulkUploadProps = {
+      name: 'file',
+      multiple: false,
+      action: REQ_URL,
+      headers: {'Accept':'*/*'},
+      data: {
+        action: 'the_ajax_hook',
+        filter: 'bulk'
+      },
+      onChange: this.handleChange,
+      /*
+      onChange(info) { 
+        const status = info.file.status;
+        if (status === 'done') {
+          //this.uploadModalHandleCancel;
+          this.setState({
+            showUploadModal: false,
+          });
+          message.success(`${info.file.name} file uploaded successfully.`);
+        } else if (status === 'error') {
+          this.setState({
+            showUploadModal: false,
+          });
+          message.error(`${info.file.name} file upload failed.`);
+        }
+      },*/
+    };
 
     return (
       <Paper style={{ position: 'relative' }}>
@@ -586,11 +603,6 @@ class viewJournals extends Component{
               <p className="ant-upload-text">Click or drag file to this area to upload</p>
             </Dragger>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={this.uploadModalHandleCancel} color="primary">
-              Done
-            </Button>
-          </DialogActions>
         </Dialog>
 
       </Paper>

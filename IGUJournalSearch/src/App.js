@@ -79,16 +79,16 @@ class App extends Component {
            <p>
            This is the IGU’s extensive list of Geography or Geography-related journals of the world. You can search by country, journal name, key word or other attributes.</p>
            <p>
-           The database is periodically updated but if you have new journals to add or would like to update the entry for any journal, please contact us.
+           The database is periodically updated but if you have new journals to add or would like to update the entry for any journal, please contact IGU via the Secretary-General at rbsgeo@hotmail.com.
            </p>
            <p>
-           Database compiled initially by the University of Amsterdam.
+           The database was compiled initially by the University of Amsterdam. A recent analysis of publication practices in Geography may be found <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" target="_blank" rel="noopener noreferrer">here</a>
            </p>
-           <p>
-           See Ton Dietz’s analysis of the the database presented at its launch at the IGC Cologne, click <a href="https://igu-online.org/wp-content/uploads/2014/08/IGU-JOURNAL-PROJECT.pdf" className="nav-toggle read">Here</a>
-            </p>
             <p>
             In listing titles in this database, IGU is in no way endorsing the contents therein, which remain entirely the responsibility of the editors of the journals in question.  Users are alerted to the problem of so-called ‘predatory’ journals and are directed to<br /> <a href="https://beallslist.weebly.com/standalone-journals.html" target="_blank" rel="noopener noreferrer">Beall’s list of Predatory Journals and Publishers</a> to check credibility of the entries.
+            </p>
+            <p>
+            A critical analysis of publication practices in Geography, and their associated challenges, may be found <a href="https://igu-online.org/wp-content/uploads/2019/05/Meadows-et-al-2016-Geo.pdf" target="_blank" rel="noopener noreferrer">here</a> 
             </p>
           </div>
         </div>
@@ -147,7 +147,13 @@ class App extends Component {
                 </div>
             </div>
 
-            <ul className="pagination table-responsive mb-2">
+            <ul 
+              className="pagination table-responsive mb-2" 
+              style={{
+                marginLeft: 0,
+                justifyContent: "flex-start"
+              }}
+            >
             {this.props.paginationList.map((character, index) =>
                 <li 
                   className="page-item" 
